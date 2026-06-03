@@ -104,7 +104,7 @@ Menu Restaurant::GetMenu() const { return menu; }
 Food::Food() : Item() , Prep_Time(-1) {}
 Food::Food(int id, string n, string e, double p, Type t, Status s, int pr)
 : Item(id, n, e, p, t, s) , Prep_Time(pr) {}
-int Food::GetPrep() { return Prep_Time; }
+int Food::GetPrep() const { return Prep_Time; }
 void Food::Display() {
     cout << "---Item Details---\n";
     cout << "\t" << type << "[" << status << "]\n";
@@ -119,7 +119,7 @@ void Food::SetPrep(int Prep) { Prep_Time = Prep; }
 Drink::Drink() : Item() , Volume(-1) {}
 Drink::Drink(int id, string n, string e, double p, Type t, Status s, double v)
 : Item(id, n, e, p, t, s) , Volume(v) {}
-double Drink::GetVolume() { return Volume; }
+double Drink::GetVolume() const { return Volume; }
 void Drink::Display() {
     cout << "---Item Details---\n";
     cout << "\t" << type << "[" << status << "]\n";

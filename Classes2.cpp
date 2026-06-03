@@ -28,7 +28,7 @@ void User::Setname(string name) { this->name = name; }
 void User::Setrole(Role role) { this->role = role; }
 void User::SetPhone(string PhoneNum) { this->Phone_Number = PhoneNum; }
 
-int User::GetID() { return ID; }
-string User::Getname() { return name; }
-Role User::Getrole() { return role; }
-string User::GetPhone() { return Phone_Number; }
+int User::GetID() const { return ID; }
+string User::Getname() const { return name; }
+Role User::Getrole() const { return role; }
+string User::GetPhone() const { return Phone_Number; }

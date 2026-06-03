@@ -31,10 +31,10 @@ class User {
         void Setrole(Role role);
         void SetPhone(string PhoneNum);
 
-        int GetID();
-        string Getname();
-        Role Getrole();
-        string GetPhone();
+        int GetID() const;
+        string Getname() const;
+        Role Getrole() const;
+        string GetPhone() const;
     private:
         int ID;
         string name;
@@ -144,7 +144,7 @@ class Food : public Item {
         Food();
         Food(int , string , string , double, Type , Status , int);
 
-        int GetPrep();
+        int GetPrep()const;
         void Display() override;
 
         void SetPrep(int Prep);
@@ -157,7 +157,7 @@ class Drink : public Item {
         Drink();
         Drink(int , string , string , double, Type , Status, double);
 
-        double GetVolume();
+        double GetVolume() const;
         void Display() override;
 
         void SetVolume(double Volume);
