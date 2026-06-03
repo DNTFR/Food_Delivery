@@ -79,7 +79,7 @@ class Item {
         void DeActivate();
 
         virtual void Display();
-    private:    
+    protected:    
         int ID;
         string name;
         string etc;

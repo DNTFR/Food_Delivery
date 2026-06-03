@@ -99,3 +99,19 @@ int Restaurant::GetPrep() const { return Prep_Time; }
 string Restaurant::GetPhone() const { return Phone_Number; }
 string Restaurant::Getdesc() const { return etc; }
 Menu Restaurant::GetMenu() const { return menu; }
+
+
+Food::Food() : Item() , Prep_Time(-1) {}
+Food::Food(int id, string n, string e, double p, Type t, Status s, int pr)
+: Item(id, n, e, p, t, s) , Prep_Time(pr) {}
+int Food::GetPrep() { return Prep_Time; }
+void Food::Display() {
+    cout << "---Item Details---\n";
+    cout << "\t" << type << "[" << status << "]\n";
+    cout << "\t" << name << "(" << ID << ")\n";
+    cout << "\tDescription: " << etc << endl;
+    cout << "\tPrice: " << Price << endl;
+    cout << "\tPrepTime: " << Prep_Time << endl;
+    cout << "------------------\n";
+}
+void Food::SetPrep(int Prep) { Prep_Time = Prep; }
