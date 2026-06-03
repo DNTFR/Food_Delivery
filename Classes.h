@@ -44,6 +44,7 @@ class User {
 
 class Address {
     public:
+        Address();
         Address(string , string , int , int);
         friend istream &operator >> (istream &input, Address &a);
         friend ostream &operator << (ostream &output, const Address &a);

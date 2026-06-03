@@ -2,6 +2,9 @@
 #include <iostream>
 using namespace std;
 
+Address::Address() 
+: City("") , Street("") , StreetNo(0) , BuildingNo(0) {}
+
 Address::Address(string c, string s, int sn, int bn) 
 : City(c) , Street(s) , StreetNo(sn) , BuildingNo(bn) {}
 

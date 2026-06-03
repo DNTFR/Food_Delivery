@@ -77,3 +77,25 @@ void Menu::displayActive() const {
         if (item->IsActive()) item->Display();
     }
 }
+
+Restaurant::Restaurant()
+: ID(0) , name("") , address(Address()) , Prep_Time(-1) , Phone_Number("") , etc("") , menu(Menu()) {}
+
+Restaurant::Restaurant(int i, string n, Address a, int p, string ph, string e, Menu m)
+: ID(i) , name(n) , address(a) , Prep_Time(p) , Phone_Number(ph) , etc(e) , menu(m) {}
+
+void Restaurant::SetID(int ID) { this->ID = ID; }
+void Restaurant::Setname(string name) { this->name = name; }
+void Restaurant::Setaddress(Address address) { this->address = address; }
+void Restaurant::SetPrep(int Prep_Time) { this->Prep_Time = Prep_Time; }
+void Restaurant::SetPhone(string PhoneNum) { Phone_Number = PhoneNum; }
+void Restaurant::Setdesc(string etc) { this->etc = etc; }
+void Restaurant::Setmenu(Menu menu) { this->menu = menu; }
+
+int Restaurant::GetID() const { return ID; }
+string Restaurant::Getname() const { return name; }
+Address Restaurant::Getaddress() const { return address; }
+int Restaurant::GetPrep() const { return Prep_Time; }
+string Restaurant::GetPhone() const { return Phone_Number; }
+string Restaurant::Getdesc() const { return etc; }
+Menu Restaurant::GetMenu() const { return menu; }
