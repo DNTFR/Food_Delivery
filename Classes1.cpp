@@ -115,3 +115,18 @@ void Food::Display() {
     cout << "------------------\n";
 }
 void Food::SetPrep(int Prep) { Prep_Time = Prep; }
+
+Drink::Drink() : Item() , Volume(-1) {}
+Drink::Drink(int id, string n, string e, double p, Type t, Status s, double v)
+: Item(id, n, e, p, t, s) , Volume(v) {}
+double Drink::GetVolume() { return Volume; }
+void Drink::Display() {
+    cout << "---Item Details---\n";
+    cout << "\t" << type << "[" << status << "]\n";
+    cout << "\t" << name << "(" << ID << ")\n";
+    cout << "\tDescription: " << etc << endl;
+    cout << "\tPrice: " << Price << endl;
+    cout << "\tVolume: " << Volume << endl;
+    cout << "------------------\n";
+}
+void Drink::SetVolume(double Volume) { this->Volume = Volume; }
