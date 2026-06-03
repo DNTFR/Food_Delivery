@@ -21,27 +21,6 @@ enum Status {
     InActive = 0
 };
 
-class User {
-    public:
-        User();
-        User(int , string , Role , string);
-
-        void SetID(int id);
-        void Setname(string name);
-        void Setrole(Role role);
-        void SetPhone(string PhoneNum);
-
-        int GetID() const;
-        string Getname() const;
-        Role Getrole() const;
-        string GetPhone() const;
-    private:
-        int ID;
-        string name;
-        Role role;
-        string Phone_Number;
-};
-
 class Address {
     public:
         Address();
@@ -139,10 +118,10 @@ class Restaurant {
         Menu menu;
 };
 
-class Food : public Item {
+class FoodC : public Item {
     public:
-        Food();
-        Food(int , string , string , double, Type , Status , int);
+        FoodC();
+        FoodC(int , string , string , double, Type , Status , int);
 
         int GetPrep()const;
         void Display() override;
@@ -152,10 +131,10 @@ class Food : public Item {
         int Prep_Time;
 };
 
-class Drink : public Item {
+class DrinkC : public Item {
     public:
-        Drink();
-        Drink(int , string , string , double, Type , Status, double);
+        DrinkC();
+        DrinkC(int , string , string , double, Type , Status, double);
 
         double GetVolume() const;
         void Display() override;

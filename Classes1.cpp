@@ -2,6 +2,21 @@
 #include <iostream>
 using namespace std;
 
+Address::Address() 
+: City("") , Street("") , StreetNo(0) , BuildingNo(0) {}
+
+Address::Address(string c, string s, int sn, int bn) 
+: City(c) , Street(s) , StreetNo(sn) , BuildingNo(bn) {}
+
+istream &operator >> (istream &input, Address &a) {
+    input >> a.City >> a.Street >> a.StreetNo >> a.BuildingNo;
+    return input;
+}
+ostream &operator << (ostream &output, const Address &a) {
+    output << a.City << ", " << a.Street << " " << a.StreetNo << ", No. " << a.BuildingNo << "\n";
+    return output;
+}
+
 Item::Item()
 : ID(0) , name("") , etc("") , Price(0.0) , type(Other) , status(InActive) {}
 
@@ -101,11 +116,11 @@ string Restaurant::Getdesc() const { return etc; }
 Menu Restaurant::GetMenu() const { return menu; }
 
 
-Food::Food() : Item() , Prep_Time(-1) {}
-Food::Food(int id, string n, string e, double p, Type t, Status s, int pr)
+FoodC::FoodC() : Item() , Prep_Time(-1) {}
+FoodC::FoodC(int id, string n, string e, double p, Type t, Status s, int pr)
 : Item(id, n, e, p, t, s) , Prep_Time(pr) {}
-int Food::GetPrep() const { return Prep_Time; }
-void Food::Display() {
+int FoodC::GetPrep() const { return Prep_Time; }
+void FoodC::Display() {
     cout << "---Item Details---\n";
     cout << "\t" << type << "[" << status << "]\n";
     cout << "\t" << name << "(" << ID << ")\n";
@@ -114,13 +129,13 @@ void Food::Display() {
     cout << "\tPrepTime: " << Prep_Time << endl;
     cout << "------------------\n";
 }
-void Food::SetPrep(int Prep) { Prep_Time = Prep; }
+void FoodC::SetPrep(int Prep) { Prep_Time = Prep; }
 
-Drink::Drink() : Item() , Volume(-1) {}
-Drink::Drink(int id, string n, string e, double p, Type t, Status s, double v)
+DrinkC::DrinkC() : Item() , Volume(-1) {}
+DrinkC::DrinkC(int id, string n, string e, double p, Type t, Status s, double v)
 : Item(id, n, e, p, t, s) , Volume(v) {}
-double Drink::GetVolume() const { return Volume; }
-void Drink::Display() {
+double DrinkC::GetVolume() const { return Volume; }
+void DrinkC::Display() {
     cout << "---Item Details---\n";
     cout << "\t" << type << "[" << status << "]\n";
     cout << "\t" << name << "(" << ID << ")\n";
@@ -129,4 +144,4 @@ void Drink::Display() {
     cout << "\tVolume: " << Volume << endl;
     cout << "------------------\n";
 }
-void Drink::SetVolume(double Volume) { this->Volume = Volume; }
+void DrinkC::SetVolume(double Volume) { this->Volume = Volume; }
