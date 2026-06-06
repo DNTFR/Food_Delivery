@@ -70,15 +70,14 @@ Menu::Menu(int ID) : RestaurantID(ID) {}
 int Menu::GetRestaurantId() { return RestaurantID; }
 
 vector <Item*> Menu::GetItems() {
-    for (int i=0; i<MenuItems.size(); i++) {
-        MenuItems[i]->Display();
-    }
+    return MenuItems;
 }
 
 int Menu::FindItemIndex(int id) {
     for (int i=0; i<MenuItems.size(); i++) {
         if (MenuItems[i]->GetID() == id) return i;
     }
+    return -1;
 }
 void Menu::SetRestaurantId(int restaurantId) { RestaurantID = restaurantId; }
 void Menu::AddItem(Item* item) { 
@@ -155,3 +154,27 @@ void DrinkC::Display() {
     cout << "------------------\n";
 }
 void DrinkC::SetVolume(double Volume) { this->Volume = Volume; }
+
+ostream& operator << (ostream& output, Type type) {
+    switch (type) {
+        case Food: output << "Food"; break;
+        case Drink: output << "Drink"; break;
+        case Other: output << "Other"; break;
+    }
+    return output;
+}
+ostream& operator << (ostream& output, Status status) {
+    switch (status) {
+        case Active: output << "Active"; break;
+        case InActive: output << "InActive"; break;
+    }
+    return output;
+}
+ostream& operator << (ostream& output, Role role) {
+    switch (role) {
+        case Customer: output << "Customer"; break;
+        case Manager: output << "Manager"; break;
+        case Admin: output << "Admin"; break;
+    }
+    return output;
+}

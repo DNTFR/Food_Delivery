@@ -5,9 +5,9 @@
 using namespace std;
 
 enum Role {
-    Customer = 1,
-    Manager = 2,
-    Admin = 3
+    Customer,
+    Manager,
+    Admin
 };
 
 enum Type {
@@ -17,8 +17,8 @@ enum Type {
 };
 
 enum Status {
-    Active = 1,
-    InActive = 0
+    Active,
+    InActive
 };
 
 class Address {
@@ -153,5 +153,9 @@ class DrinkC : public Item {
     private:
         double Volume;
 };
+
+ostream& operator << (ostream& output, Type type);
+ostream& operator << (ostream& output, Status status);
+ostream& operator << (ostream& output, Role role);
 
 #endif
