@@ -27,6 +27,16 @@ class Address {
         Address(string , string , int , int);
         friend istream &operator >> (istream &input, Address &a);
         friend ostream &operator << (ostream &output, const Address &a);
+
+        string GetCity() const;
+        string GetStreet() const;
+        int GetStreetNo() const;
+        int GetBuildingNo() const;
+
+        void SetCity(string c);
+        void SetStreet(string s);
+        void SetStreetNo(int sn);
+        void SetBuildNo(int bn);
     private:    
         string City;
         string Street;

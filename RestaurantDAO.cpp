@@ -1,78 +1,58 @@
 #include "DAO.h"
 #include <iostream>
 #include <sstream>
-using namespace std;
+#include <vector>
+#include <cstdlib> // برای atoi
 
 RestaurantDAO::RestaurantDAO(DatabaseManager& database) : db(database) {}
 
-bool RestaurantDAO::Insert(const Restaurant& restaurant) {
-    stringstream sql;
-    sql << "INSERT INTO restaurants (id, name, phone, prep_time, description) VALUES ("
-        << restaurant.GetID() << ", '"
-        << restaurant.Getname() << "', '"
-        << restaurant.GetPhone() << "', "
-        << restaurant.GetPrep() << ", '"
-        << restaurant.Getdesc() << "');";
-    return db.execute(sql.str());
-}
-
-bool RestaurantDAO::Update(const Restaurant& restaurant) {
-    stringstream sql;
-    sql << "UPDATE restaurants SET "
-        << "name = '" << restaurant.Getname() << "', "
-        << "phone = '" << restaurant.GetPhone() << "', "
-        << "prep_time = " << restaurant.GetPrep() << ", "
-        << "description = '" << restaurant.Getdesc() << "' "
-        << "WHERE id = " << restaurant.GetID() << ";";
-    return db.execute(sql.str());
-}
-
-bool RestaurantDAO::Remove(int id) {
-    stringstream sql;
-    sql << "DELETE FROM restaurants WHERE id = " << id << ";";
-    return db.execute(sql.str());
-}
-
+// اصلاح ورودی‌ها به char argv و char azColName
 int RestaurantDAO::RestaurantCallback(void* data, int argc, char** argv, char** azColName) {
     vector<Restaurant>* restaurants = static_cast<vector<Restaurant>*>(data);
+    
     int id = argv[0] ? atoi(argv[0]) : 0;
     string name = argv[1] ? argv[1] : "";
-    string address = argv[2] ? argv[2] : "";
-    string phone = argv[3] ? argv[3] : "";
-    string status = argv[4] ? argv[4] : "active";
-    int prepTime = argv[5] ? atoi(argv[5]) : 0;
-    string description = argv[6] ? argv[6] : "";
-    Address addr("", "", 0, 0);
-    Menu menu;
     
-    Restaurant r(id, name, addr, prepTime, phone, description, menu);
-    restaurants->push_back(r);
+    // خواندن اجزای آدرس از ستون‌های جداگانه دیتابیس
+    string city = argv[2] ? argv[2] : "";
+    string street = argv[3] ? argv[3] : "";
+    int sNo = argv[4] ? atoi(argv[4]) : 0;
+    int bNo = argv[5] ? atoi(argv[5]) : 0;
+    Address addr(city, street, sNo, bNo);
+
+    int prepTime = argv[6] ? atoi(argv[6]) : 0;
+    string phone = argv[7] ? argv[7] : "";
+    string description = argv[8] ? argv[8] : "";
     
+    Menu menu; // منو را بعداً لود می‌کنیم
+    
+    restaurants->push_back(Restaurant(id, name, addr, prepTime, phone, description, menu));
     return 0;
+}
+
+bool RestaurantDAO::Insert(const Restaurant& r) {
+    stringstream sql;
+    Address addr = r.Getaddress();
+    
+    sql << "INSERT INTO restaurants (id, name, city, street, sNo, bNo, prep_time, phone, description) VALUES ("
+        << r.GetID() << ", '" << r.Getname() << "', '" 
+        << addr.GetCity() << "', '" << addr.GetStreet() << "', " 
+        << addr.GetStreetNo() << ", " << addr.GetBuildingNo() << ", "
+        << r.GetPrep() << ", '" << r.GetPhone() << "', '" << r.Getdesc() << "');";
+    
+    return db.execute(sql.str());
 }
 
 Restaurant* RestaurantDAO::FindById(int id) {
     stringstream sql;
     sql << "SELECT * FROM restaurants WHERE id = " << id << ";";
     vector<Restaurant> results;
+    
+    // اصلاح شده: استفاده از db.query بجای db.selectWithCallback
     if (db.query(sql.str(), RestaurantCallback, &results)) {
         if (!results.empty()) {
             return new Restaurant(results[0]);
         }
     }
     return nullptr;
-}
-
-vector<Restaurant> RestaurantDAO::FindAll() {
-    vector<Restaurant> results;
-    string sql = "SELECT * FROM restaurants;";
-    db.query(sql, RestaurantCallback, &results);
-    return results;
-}
-
-vector<Restaurant> RestaurantDAO::FindActive() {
-    vector<Restaurant> results;
-    string sql = "SELECT * FROM restaurants WHERE status = 'active';";
-    db.query(sql, RestaurantCallback, &results);
-    return results;
 }

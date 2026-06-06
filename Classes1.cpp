@@ -17,6 +17,16 @@ ostream &operator << (ostream &output, const Address &a) {
     return output;
 }
 
+string Address::GetCity() const { return City; }
+string Address::GetStreet() const { return Street; }
+int Address::GetStreetNo() const { return StreetNo; }
+int Address::GetBuildingNo() const { return BuildingNo; }
+
+void Address::SetCity(string c) { City = c; }
+void Address::SetStreet(string s) { Street = s; }
+void Address::SetStreetNo(int sn) { StreetNo = sn; }
+void Address::SetBuildNo(int bn) { BuildingNo = bn; }
+
 Item::Item()
 : ID(0) , name("") , etc("") , Price(0.0) , type(Other) , status(InActive) {}
 
