@@ -116,7 +116,7 @@ int MenuItemDAO::ItemCallback(void* data, int argc, char** argv, char** azColNam
         item = new FoodC(id, name, description, price, type, status, prepTime);
     }
     else if (type == Drink) {
-        double volume = (argc > 7 && argv[7]) ? atof(argv[7]) : 250;
+        double volume = (argc > 8 && argv[8]) ? atof(argv[8]) : 250;
         item = new DrinkC(id, name, description, price, type, status, volume);
     }
     else {
