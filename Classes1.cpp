@@ -103,10 +103,10 @@ void Menu::displayActive() const {
 }
 
 Restaurant::Restaurant()
-: ID(0) , name("") , address(Address()) , Prep_Time(-1) , Phone_Number("") , etc("") , menu(Menu()) {}
+: ID(0) , name("") , address(Address()) , Prep_Time(-1) , Phone_Number("") , etc("") , menu(Menu()) , status(InActive) {}
 
-Restaurant::Restaurant(int i, string n, Address a, int p, string ph, string e, Menu m)
-: ID(i) , name(n) , address(a) , Prep_Time(p) , Phone_Number(ph) , etc(e) , menu(m) {}
+Restaurant::Restaurant(int i, string n, Address a, int p, string ph, string e, Menu m, Status s)
+: ID(i) , name(n) , address(a) , Prep_Time(p) , Phone_Number(ph) , etc(e) , menu(m) , status(s) {}
 
 void Restaurant::SetID(int ID) { this->ID = ID; }
 void Restaurant::Setname(string name) { this->name = name; }
@@ -115,6 +115,7 @@ void Restaurant::SetPrep(int Prep_Time) { this->Prep_Time = Prep_Time; }
 void Restaurant::SetPhone(string PhoneNum) { Phone_Number = PhoneNum; }
 void Restaurant::Setdesc(string etc) { this->etc = etc; }
 void Restaurant::Setmenu(Menu menu) { this->menu = menu; }
+void Restaurant::SetStatus(Status status) { this->status = status; }
 
 int Restaurant::GetID() const { return ID; }
 string Restaurant::Getname() const { return name; }
@@ -123,6 +124,8 @@ int Restaurant::GetPrep() const { return Prep_Time; }
 string Restaurant::GetPhone() const { return Phone_Number; }
 string Restaurant::Getdesc() const { return etc; }
 Menu Restaurant::GetMenu() const { return menu; }
+Status Restaurant::GetStatus() const { return status; }
+
 
 
 FoodC::FoodC() : Item() , Prep_Time(-1) {}

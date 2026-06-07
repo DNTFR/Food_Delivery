@@ -13,7 +13,7 @@ int main() {
     }
 
     cout << "\n--- Creating Tables ---" << endl;
-    
+
     string createRestaurantTable = 
         "CREATE TABLE IF NOT EXISTS restaurants ("
         "id INTEGER PRIMARY KEY, "
@@ -24,7 +24,8 @@ int main() {
         "bNo INTEGER, "
         "prep_time INTEGER, "
         "phone TEXT, "
-        "description TEXT);";
+        "description TEXT, "
+        "status INTEGER DEFAULT 1);";
 
     string createMenuTable = 
         "CREATE TABLE IF NOT EXISTS menu_items ("
@@ -45,7 +46,7 @@ int main() {
 
     Address addr("Tehran", "Vanak", 12, 4);
     Menu emptyMenu(1);
-    Restaurant myRestaurant(1, "Shandiz Luxury", addr, 30, "02188888888", "Best Persian Kebabs", emptyMenu);
+    Restaurant myRestaurant(1, "Shandiz Luxury", addr, 30, "02188888888", "Best Persian Kebabs", emptyMenu , InActive);
 
     if (restDAO.Insert(myRestaurant)) {
         cout << "[SUCCESS] Restaurant inserted successfully!" << endl;

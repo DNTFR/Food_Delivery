@@ -21,6 +21,13 @@ enum Status {
     InActive
 };
 
+class Admin {
+    public:
+        
+    private:
+
+};
+
 class Address {
     public:
         Address();
@@ -101,7 +108,7 @@ class Menu {
 class Restaurant {
     public:
         Restaurant();
-        Restaurant(int , string , Address , int , string , string , Menu);
+        Restaurant(int , string , Address , int , string , string , Menu , Status);
 
         void SetID(int ID);
         void Setname(string name);
@@ -110,6 +117,7 @@ class Restaurant {
         void SetPhone(string PhoneNum);
         void Setdesc(string etc);
         void Setmenu(Menu menu);
+        void SetStatus(Status status);
 
         int GetID() const;
         string Getname() const;
@@ -118,6 +126,7 @@ class Restaurant {
         string GetPhone() const;
         string Getdesc() const;
         Menu GetMenu() const;
+        Status GetStatus() const;
     private:
         int ID;
         string name;
@@ -126,6 +135,7 @@ class Restaurant {
         string Phone_Number;
         string etc;
         Menu menu;
+        Status status;
 };
 
 class FoodC : public Item {
