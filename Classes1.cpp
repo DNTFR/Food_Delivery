@@ -55,12 +55,12 @@ void Item::Activate() { status = Active; }
 void Item::DeActivate() { status = InActive; }
 
 void Item::Display() {
-    cout << "--- Item Details ---\n";
-    cout << "  " << type << "[" << status << "]\n";
-    cout << "  " << name << "(" << ID << ")\n";
-    cout << "  Description: " << etc << endl;
-    cout << "  Price: " << Price << endl;
-    cout << "------------------\n";
+    cout << "  --- Item Details ---\n";
+    cout << "     " << type << "[" << status << "]\n";
+    cout << "     " << name << "(" << ID << ")\n";
+    cout << "     Description: " << etc << endl;
+    cout << "     Price: " << Price << endl;
+    cout << "  --------------------\n";
 }
 
 Menu::Menu() : RestaurantID(0) {}
@@ -133,13 +133,13 @@ FoodC::FoodC(int id, string n, string e, double p, Type t, Status s, int pr)
 : Item(id, n, e, p, t, s) , Prep_Time(pr) {}
 int FoodC::GetPrep() const { return Prep_Time; }
 void FoodC::Display() {
-    cout << "---Item Details---\n";
-    cout << "\t" << type << "[" << status << "]\n";
-    cout << "\t" << name << "(" << ID << ")\n";
-    cout << "\tDescription: " << etc << endl;
-    cout << "\tPrice: " << Price << endl;
-    cout << "\tPrepTime: " << Prep_Time << endl;
-    cout << "------------------\n";
+    cout << "  --- Item Details ---\n";
+    cout << "     " << type << "[" << status << "]\n";
+    cout << "     " << name << "(" << ID << ")\n";
+    cout << "     Description: " << etc << endl;
+    cout << "     Price: " << Price << endl;
+    cout << "     PrepTime: " << Prep_Time << endl;
+    cout << "  --------------------\n";
 }
 void FoodC::SetPrep(int Prep) { Prep_Time = Prep; }
 
@@ -148,13 +148,13 @@ DrinkC::DrinkC(int id, string n, string e, double p, Type t, Status s, double v)
 : Item(id, n, e, p, t, s) , Volume(v) {}
 double DrinkC::GetVolume() const { return Volume; }
 void DrinkC::Display() {
-    cout << "---Item Details---\n";
-    cout << "\t" << type << "[" << status << "]\n";
-    cout << "\t" << name << "(" << ID << ")\n";
-    cout << "\tDescription: " << etc << endl;
-    cout << "\tPrice: " << Price << endl;
-    cout << "\tVolume: " << Volume << endl;
-    cout << "------------------\n";
+    cout << "  --- Item Details ---\n";
+    cout << "     " << type << "[" << status << "]\n";
+    cout << "     " << name << "(" << ID << ")\n";
+    cout << "     Description: " << etc << endl;
+    cout << "     Price: " << Price << endl;
+    cout << "     Volume: " << Volume << endl;
+    cout << "  --------------------\n";
 }
 void DrinkC::SetVolume(double Volume) { this->Volume = Volume; }
 
