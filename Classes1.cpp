@@ -55,11 +55,11 @@ void Item::Activate() { status = Active; }
 void Item::DeActivate() { status = InActive; }
 
 void Item::Display() {
-    cout << "---Item Details---\n";
-    cout << "\t" << type << "[" << status << "]\n";
-    cout << "\t" << name << "(" << ID << ")\n";
-    cout << "\tDescription: " << etc << endl;
-    cout << "\tPrice: " << Price << endl;
+    cout << "--- Item Details ---\n";
+    cout << "  " << type << "[" << status << "]\n";
+    cout << "  " << name << "(" << ID << ")\n";
+    cout << "  Description: " << etc << endl;
+    cout << "  Price: " << Price << endl;
     cout << "------------------\n";
 }
 
