@@ -25,7 +25,7 @@ class MenuItemDAO {
     public:
         MenuItemDAO(DatabaseManager& db);
         
-        bool Insert(Item* item);
+        bool Insert(Item* item, int RestID);
         bool Update(Item* item);
         bool Remove(int id);
 

@@ -6,7 +6,7 @@ using namespace std;
 
 MenuItemDAO::MenuItemDAO(DatabaseManager& database) : db(database) {}
 
-bool MenuItemDAO::Insert(Item* item) {
+bool MenuItemDAO::Insert(Item* item, int RestID) {
     if (!item) return false;
     
     stringstream sql;
@@ -21,7 +21,7 @@ bool MenuItemDAO::Insert(Item* item) {
         FoodC* food = dynamic_cast<FoodC*>(item);
         sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available, prep_time) VALUES ("
             << item->GetID() << ", "
-            << "1, '"  // restaurant_id - بعداً باید از کجا بیاید؟
+            << RestID << ", "
             << item->Getname() << "', '"
             << item->Getdesc() << "', "
             << item->GetPrice() << ", '"
@@ -33,7 +33,7 @@ bool MenuItemDAO::Insert(Item* item) {
         DrinkC* drink = dynamic_cast<DrinkC*>(item);
         sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available, volume) VALUES ("
             << item->GetID() << ", "
-            << "1, '"
+            << RestID << ", "
             << item->Getname() << "', '"
             << item->Getdesc() << "', "
             << item->GetPrice() << ", '"
@@ -44,7 +44,7 @@ bool MenuItemDAO::Insert(Item* item) {
     else {
         sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available) VALUES ("
             << item->GetID() << ", "
-            << "1, '"
+            << RestID << ", "
             << item->Getname() << "', '"
             << item->Getdesc() << "', "
             << item->GetPrice() << ", '"

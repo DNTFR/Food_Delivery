@@ -43,7 +43,6 @@ int main() {
     MenuItemDAO itemDAO(db);
 
     vector<Restaurant> existingRests = restDAO.FindAll();
-    if (existingRests.empty()) {
         cout << "[!] Database is empty. Generating test data..." << endl;
 
         Address addr1("Tehran", "Vanak", 12, 4);
@@ -53,27 +52,29 @@ int main() {
         Address addr2("Mashhad", "Ahmadabad", 10, 2);
         Menu menu2(2);
         Restaurant rest2(2, "Burger Joint", addr2, 15, "051-3333", "Fast Food Center", menu2, InActive);
+        
+        Address addr3("Mashhad", "Koohsangi", 10, 2);
+        Menu menu3(3);
+        Restaurant rest3(3, "Layali", addr3, 20, "051-3789", "Fast Food Center", menu3, Active);
 
         restDAO.Insert(rest1);
         restDAO.Insert(rest2);
+        restDAO.Insert(rest3);
 
         Item* food1 = new FoodC(101, "Shishlik Kebab", "Premium meat", 350.0, Food, Active, 35);
         Item* drink1 = new DrinkC(102, "Doogh", "Traditional drink", 25.0, Drink, Active, 500.0);
         
         Item* food2 = new FoodC(103, "Double Cheeseburger", "Juicy beef", 180.0, Food, Active, 20);
 
-        itemDAO.Insert(food1);
-        itemDAO.Insert(drink1);
-        itemDAO.Insert(food2);
+        itemDAO.Insert(food1, 1);
+        itemDAO.Insert(drink1, 1);
+        itemDAO.Insert(food2, 3);
 
         delete food1;
         delete drink1;
         delete food2;
 
         cout << "[SUCCESS] Test data successfully injected!" << endl;
-    } else {
-        cout << "[i] Database already contains data. Skipping data injection." << endl;
-    }
 
     int choice;
     while(1){
@@ -93,7 +94,7 @@ int main() {
             while(1){    
                 system("cls");
                 cout << "--- Now You Are Customer ---\n\n";
-                cout << "  Available Restaurants:\n";
+                cout << "  Available Restaurants:\n\n";
                 vector <Restaurant> ActiveRests = restDAO.FindActive();
                 if (ActiveRests.size() == 0) {
                     cout << "\tThere is No Active Restaurants!\n";
@@ -125,6 +126,7 @@ int main() {
                         int ordChoice; cin >> ordChoice;
                         if (ordChoice == 0) break;
                         else {
+                            system("cls");
                             cout << "Coming Soon\n";
                         }
                     }
