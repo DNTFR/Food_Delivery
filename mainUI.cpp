@@ -89,7 +89,7 @@ int main() {
         if (choice == 0) {
             cout << "See You Later\n";
             break;
-        }
+        }  
         else if (choice == 1) {
             while(1){    
                 system("cls");
@@ -129,6 +129,33 @@ int main() {
                             system("cls");
                             cout << "Coming Soon\n";
                         }
+                    }
+                }
+            }
+        }
+        else if (choice == 2) {
+            while(1) {
+                system("cls");
+                cout << "--- Now You Are Manager ---\n\n";
+                cout << "  Restaurants To Manage : \n";
+                vector <Restaurant> AllRest = restDAO.FindAll();
+                if (AllRest.size() == 0) {
+                    cout << "\tThere Is No Resturants To Manage!\n";
+                    break;
+                }
+                else {
+                    for (int i=0; i<AllRest.size(); i++) {
+                        cout << "\t[ " << AllRest[i].GetID() << " ] " << AllRest[i].Getname() << endl;
+                    }
+                    cout << endl;
+                    int ManageChoice;
+                    cout << "  [0] Back to Main Menu\n  Or\n";
+                    cout << "  Enter Restaurant ID : "; cin >> ManageChoice; cout << endl;
+                    if (ManageChoice == 0) break;
+                    Restaurant* SelectedRest = restDAO.FindById(restChoice);
+                    if (SelectedRest == nullptr) {
+                        cout << "\tInvalid ID!! Try Again!\n";
+                        continue;
                     }
                 }
             }
