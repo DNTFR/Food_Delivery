@@ -88,7 +88,7 @@ class Menu {
     public:
         Menu();
         Menu(int ID);
-      
+
         int GetRestaurantId();
         vector <Item*> GetItems();
 
@@ -125,7 +125,7 @@ class Restaurant {
         int GetPrep() const;
         string GetPhone() const;
         string Getdesc() const;
-        Menu GetMenu() const;
+        Menu& GetMenu();
         Status GetStatus() const;
     private:
         int ID;

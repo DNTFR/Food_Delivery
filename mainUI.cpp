@@ -63,7 +63,6 @@ int main() {
 
         Item* food1 = new FoodC(101, "Shishlik Kebab", "Premium meat", 350.0, Food, Active, 35);
         Item* drink1 = new DrinkC(102, "Doogh", "Traditional drink", 25.0, Drink, Active, 500.0);
-        
         Item* food2 = new FoodC(103, "Double Cheeseburger", "Juicy beef", 180.0, Food, Active, 20);
 
         itemDAO.Insert(food1, 1);
@@ -145,17 +144,37 @@ int main() {
                 }
                 else {
                     for (int i=0; i<AllRest.size(); i++) {
-                        cout << "\t[ " << AllRest[i].GetID() << " ] " << AllRest[i].Getname() << endl;
+                        cout << "    [ " << AllRest[i].GetID() << " ] " << AllRest[i].Getname() << endl;
                     }
                     cout << endl;
                     int ManageChoice;
                     cout << "  [0] Back to Main Menu\n  Or\n";
                     cout << "  Enter Restaurant ID : "; cin >> ManageChoice; cout << endl;
                     if (ManageChoice == 0) break;
-                    Restaurant* SelectedRest = restDAO.FindById(restChoice);
+                    Restaurant* SelectedRest = restDAO.FindById(ManageChoice);
                     if (SelectedRest == nullptr) {
                         cout << "\tInvalid ID!! Try Again!\n";
                         continue;
+                    }
+                    while(1) {
+                        system("cls");
+                        cout << "=== Your Restuarant Information ===\n\n";
+                        cout << "  ID : " << SelectedRest->GetID() << endl;
+                        cout << "  Name : " << SelectedRest->Getname() << endl;
+                        cout << "  Address : " << SelectedRest->Getaddress();
+                        cout << "  Prep_Time : " << SelectedRest->GetPrep() << endl;
+                        cout << "  Phone_Number : " << SelectedRest->GetPhone() << endl;
+                        cout << "  Description : " << SelectedRest->Getdesc() << endl;
+                        cout << "  Status : " << SelectedRest->GetStatus() << endl;
+                        cout << "  Menu : \n";
+                        vector <Item*> mennu = itemDAO.FindByRestaurant(ManageChoice);
+                        for (int i=0; i<mennu.size(); i++) mennu[i]->Display();
+                        cout << endl;
+                        cout << "  [1] Add Item\n";
+                        cout << "  [2] Change Activity\n";
+                        cout << "  [0] Back To Restaurants\n";
+                        int cchoice; cin >> cchoice;
+                        if (cchoice == 0) break;
                     }
                 }
             }

@@ -123,7 +123,7 @@ Address Restaurant::Getaddress() const { return address; }
 int Restaurant::GetPrep() const { return Prep_Time; }
 string Restaurant::GetPhone() const { return Phone_Number; }
 string Restaurant::Getdesc() const { return etc; }
-Menu Restaurant::GetMenu() const { return menu; }
+Menu& Restaurant::GetMenu() { return menu; }
 Status Restaurant::GetStatus() const { return status; }
 
 
