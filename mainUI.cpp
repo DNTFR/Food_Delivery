@@ -43,6 +43,7 @@ int main() {
     MenuItemDAO itemDAO(db);
 
     vector<Restaurant> existingRests = restDAO.FindAll();
+    if (existingRests.empty()){
         cout << "[!] Database is empty. Generating test data..." << endl;
 
         Address addr1("Tehran", "Vanak", 12, 4);
@@ -69,12 +70,14 @@ int main() {
         itemDAO.Insert(drink1, 1);
         itemDAO.Insert(food2, 3);
 
+        bool res1 = itemDAO.Insert(food1, 1);
+        cout << (res1 ? "SS\n" : "FF\n");
         delete food1;
         delete drink1;
         delete food2;
 
         cout << "[SUCCESS] Test data successfully injected!" << endl;
-
+    }
     int choice;
     while(1){
         system("cls");
@@ -96,12 +99,12 @@ int main() {
                 cout << "  Available Restaurants:\n\n";
                 vector <Restaurant> ActiveRests = restDAO.FindActive();
                 if (ActiveRests.size() == 0) {
-                    cout << "\tThere is No Active Restaurants!\n";
+                    cout << "    There is No Active Restaurants!\n";
                     break;
                 }
                 else {
                     for (int i=0; i<ActiveRests.size(); i++) {
-                        cout << "\t[ " << ActiveRests[i].GetID() << " ] " << ActiveRests[i].Getname()
+                        cout << "    [ " << ActiveRests[i].GetID() << " ] " << ActiveRests[i].Getname()
                              << " (Prepare Time : " << ActiveRests[i].GetPrep() << "mins)\n";
                     }
                     cout << endl;

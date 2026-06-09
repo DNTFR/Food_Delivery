@@ -2,13 +2,15 @@
 #include "Classes.h"
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <cstdlib>
+
 using namespace std;
 
 MenuItemDAO::MenuItemDAO(DatabaseManager& database) : db(database) {}
 
 bool MenuItemDAO::Insert(Item* item, int RestID) {
     if (!item) return false;
-    
     stringstream sql;
     string typeStr;
     switch(item->Gettype()) {
@@ -16,40 +18,41 @@ bool MenuItemDAO::Insert(Item* item, int RestID) {
         case Drink: typeStr = "drink"; break;
         default: typeStr = "other";
     }
-    
     if (item->Gettype() == Food) {
         FoodC* food = dynamic_cast<FoodC*>(item);
-        sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available, prep_time) VALUES ("
+        sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available, prep_time, volume) VALUES ("
             << item->GetID() << ", "
-            << RestID << ", "
+            << RestID << ", '"           
             << item->Getname() << "', '"
             << item->Getdesc() << "', "
             << item->GetPrice() << ", '"
             << typeStr << "', "
-            << (item->Getstatus() ? 1 : 0) << ", "
-            << (food ? food->GetPrep() : 0) << ");";
+            << (item->Getstatus() == Active ? 1 : 0) << ", "
+            << (food ? food->GetPrep() : 0) << ", "
+            << "0.0);";             
     } 
     else if (item->Gettype() == Drink) {
         DrinkC* drink = dynamic_cast<DrinkC*>(item);
-        sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available, volume) VALUES ("
+        sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available, prep_time, volume) VALUES ("
             << item->GetID() << ", "
-            << RestID << ", "
+            << RestID << ", '"         
             << item->Getname() << "', '"
             << item->Getdesc() << "', "
             << item->GetPrice() << ", '"
             << typeStr << "', "
-            << (item->Getstatus() ? 1 : 0) << ", "
+            << (item->Getstatus() == Active ? 1 : 0) << ", "
+            << "0, "              
             << (drink ? drink->GetVolume() : 0) << ");";
     }
     else {
-        sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available) VALUES ("
+        sql << "INSERT INTO menu_items (id, restaurant_id, name, description, price, type, is_available, prep_time, volume) VALUES ("
             << item->GetID() << ", "
-            << RestID << ", "
+            << RestID << ", '"
             << item->Getname() << "', '"
             << item->Getdesc() << "', "
             << item->GetPrice() << ", '"
             << typeStr << "', "
-            << (item->Getstatus() ? 1 : 0) << ");";
+            << (item->Getstatus() == Active ? 1 : 0) << ", 0, 0.0);";
     }
     
     return db.execute(sql.str());
@@ -64,25 +67,25 @@ bool MenuItemDAO::Update(Item* item) {
         case Drink: typeStr = "drink"; break;
         default: typeStr = "other";
     }
-    
     sql << "UPDATE menu_items SET "
         << "name = '" << item->Getname() << "', "
         << "description = '" << item->Getdesc() << "', "
         << "price = " << item->GetPrice() << ", "
         << "type = '" << typeStr << "', "
-        << "is_available = " << (item->Getstatus() ? 1 : 0) << " ";
+        << "is_available = " << (item->Getstatus() == Active ? 1 : 0);
     
-        if (item->Gettype() == Food) {
+    if (item->Gettype() == Food) {
         FoodC* food = dynamic_cast<FoodC*>(item);
-        sql << ", prep_time = " << (food ? food->GetPrep() : 0) << " ";
+        sql << ", prep_time = " << (food ? food->GetPrep() : 0) << ", volume = 0.0 ";
     }
     else if (item->Gettype() == Drink) {
         DrinkC* drink = dynamic_cast<DrinkC*>(item);
-        sql << ", volume = " << (drink ? drink->GetVolume() : 0) << " ";
+        sql << ", prep_time = 0, volume = " << (drink ? drink->GetVolume() : 0) << " ";
     }
-    
+    else {
+        sql << ", prep_time = 0, volume = 0.0 ";
+    }
     sql << "WHERE id = " << item->GetID() << ";";
-    
     return db.execute(sql.str());
 }
 
@@ -94,9 +97,9 @@ bool MenuItemDAO::Remove(int id) {
 
 int MenuItemDAO::ItemCallback(void* data, int argc, char** argv, char** azColName) {
     vector<Item*>* items = static_cast<vector<Item*>*>(data);
+    if (!argv) return 0;
     
     int id = argv[0] ? atoi(argv[0]) : 0;
-    int restaurantId = argv[1] ? atoi(argv[1]) : 0;
     string name = argv[2] ? argv[2] : "";
     string description = argv[3] ? argv[3] : "";
     double price = argv[4] ? atof(argv[4]) : 0.0;
@@ -116,13 +119,16 @@ int MenuItemDAO::ItemCallback(void* data, int argc, char** argv, char** azColNam
         item = new FoodC(id, name, description, price, type, status, prepTime);
     }
     else if (type == Drink) {
-        double volume = (argc > 8 && argv[8]) ? atof(argv[8]) : 250;
+        double volume = (argc > 8 && argv[8]) ? atof(argv[8]) : 250.0;
         item = new DrinkC(id, name, description, price, type, status, volume);
     }
     else {
         item = new Item(id, name, description, price, type, status);
     }
-    items->push_back(item);
+    
+    if (item) {
+        items->push_back(item);
+    }
     return 0;
 }
 
@@ -130,12 +136,12 @@ Item* MenuItemDAO::FindById(int id) {
     stringstream sql;
     sql << "SELECT * FROM menu_items WHERE id = " << id << ";";
     vector<Item*> results;
-    if (db.query(sql.str(), ItemCallback, &results)) {
+    
+    if (db.query(sql.str(), reinterpret_cast<int(*)(void*, int, char**, char**)>(ItemCallback), &results)) {
         if (!results.empty()) {
             return results[0];
         }
     }
-    
     return nullptr;
 }
 
@@ -143,6 +149,7 @@ vector<Item*> MenuItemDAO::FindByRestaurant(int restaurantId) {
     vector<Item*> results;
     stringstream sql;
     sql << "SELECT * FROM menu_items WHERE restaurant_id = " << restaurantId << ";";
-    db.query(sql.str(), ItemCallback, &results);
+    
+    db.query(sql.str(), reinterpret_cast<int(*)(void*, int, char**, char**)>(ItemCallback), &results);
     return results;
 }
