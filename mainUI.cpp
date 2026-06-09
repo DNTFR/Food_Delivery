@@ -223,6 +223,68 @@ int main() {
                             if(itemDAO.Remove(id)) cout << "Item Removed Successfully\n";
                             else cout << "Removing Item Failed1\n";
                         }
+                        else if (cchoice == 4) {
+                            while(1) { 
+                                system("cls");
+                                cout << "=== Your Restuarant Information ===\n\n";
+                                cout << "  ID : " << SelectedRest->GetID() << endl;
+                                cout << "  Name : " << SelectedRest->Getname() << endl;
+                                cout << "  Address : " << SelectedRest->Getaddress();
+                                cout << "  Prep_Time : " << SelectedRest->GetPrep() << endl;
+                                cout << "  Phone_Number : " << SelectedRest->GetPhone() << endl;
+                                cout << "  Description : " << SelectedRest->Getdesc() << endl;
+                                cout << "  Status : " << SelectedRest->GetStatus() << endl;
+                                cout << "\n--- Editing Restaurant Info ---\n";
+                                cout << "  Enter What You Want To Edit :\n";
+                                cout << "    [1] ID , [2] Name , [3] Address , [4] Prep_Time \n";
+                                cout << "    [5] Phone_Number , [6] Description , [7] Status \n";
+                                cout << "    [0] If You Finish Editing!\n ";
+                                int edchoice; cin >> edchoice;
+                                if (edchoice == 0) break;
+                                else if (edchoice == 1) {
+                                    system("cls");
+                                    cout << "Enter New ID : "; int x; cin >> x;
+                                    SelectedRest->SetID(x);
+                                    continue;
+                                }
+                                else if (edchoice == 2) {
+                                    system("cls");
+                                    cout << "Enter New Name : "; string x; cin >> x;
+                                    SelectedRest->Setname(x);
+                                    continue;
+                                }
+                                else if (edchoice == 3) {
+                                    system("cls");
+                                    cout << "Enter New Address : "; Address x; cin >> x;
+                                    SelectedRest->Setaddress(x);
+                                    continue;
+                                }
+                                else if (edchoice == 4) {
+                                    system("cls");
+                                    cout << "Enter New Prep_Time : "; int x; cin >> x;
+                                    SelectedRest->SetPrep(x);
+                                    continue;
+                                }
+                                else if (edchoice == 5) {
+                                    system("cls");
+                                    cout << "Enter New Phone_Number : "; string x; cin >> x;
+                                    SelectedRest->SetPhone(x);
+                                    continue;
+                                }
+                                else if (edchoice == 6) {
+                                    system("cls");
+                                    cout << "Enter New Description : "; string x; getline(cin, x);
+                                    SelectedRest->Setdesc(x);
+                                    continue;
+                                }
+                                else if (edchoice == 7) {
+                                    system("cls");
+                                    cout << "Enter New Status ([1] Active , [0] InActive): "; int x; cin >> x;
+                                    (x == 1) ? SelectedRest->SetStatus(Active) : SelectedRest->SetStatus(InActive);
+                                    continue;
+                                }
+                            }
+                        }
                     }
                 }
             }
