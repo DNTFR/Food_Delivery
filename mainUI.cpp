@@ -174,10 +174,55 @@ int main() {
                         for (int i=0; i<mennu.size(); i++) mennu[i]->Display();
                         cout << endl;
                         cout << "  [1] Add Item\n";
-                        cout << "  [2] Change Activity\n";
+                        cout << "  [2] Update Item\n";
+                        cout << "  [3] Remove Item\n";
+                        cout << "  [4] Edit Info\n";
                         cout << "  [0] Back To Restaurants\n";
                         int cchoice; cin >> cchoice;
                         if (cchoice == 0) break;
+                        else if (cchoice == 1 || cchoice == 2) {
+                            system("cls");
+                            int id, type, prep, activity;
+                            Status stat;
+                            Type typ;
+                            string name, desc;
+                            double price, volume;
+                            cout << "--- Adding/Updating Item ---\n";
+                            cout << "  Enter Item ID : "; cin >> id; cin.ignore(); cout << endl;
+                            if (cchoice == 2) itemDAO.FindById(id)->Display();
+                            cout << "  Enter Item Name : "; getline(cin, name); cout << endl;
+                            cout << "  Enter Item Description : "; getline(cin, desc); cout << endl;
+                            cout << "  Enter Item Price : "; cin >> price; cout << endl;
+                            cout << "  Enter Item Activity ([1] Active , [0] InActive): "; cin >> activity; cout << endl;
+                            (activity == 1) ? stat = Active : stat = InActive;
+                            cout << "  Enter Item Type ([1] Food , [2] Drink): "; cin >> type; cout << endl;
+                            (type == 1) ? typ = Food : typ = Drink;
+                            Item* newItem = nullptr;
+                            if (type == 1) {
+                                cout << "  Enter Prep_Time : "; cin >> prep; cout << endl;
+                                newItem = new FoodC(id, name, desc, price, Food, stat, prep);
+                            }
+                            else {
+                                cout << "  Enter Volume : "; cin >> volume; cout << endl;
+                                newItem = new DrinkC(id, name, desc, price, Drink, stat, volume);
+                            }
+                            if (cchoice == 1) {
+                                if (itemDAO.Insert(newItem , ManageChoice)) cout << "Item Added Successfully\n";
+                                else cout << "Adding Item Failed!\n";
+                            }
+                            else {
+                                if (itemDAO.Update(newItem)) cout << "Item Updated Successfully\n";
+                                else cout << "Updating Item Failed!\n";
+                            }
+                            delete newItem;
+                        }
+                        else if (cchoice == 3) {
+                            system("cls");
+                            cout << "--- Removing Item ---\n";
+                            cout << "  Enter Item ID to Remove : "; int id; cin >> id; cout << endl;
+                            if(itemDAO.Remove(id)) cout << "Item Removed Successfully\n";
+                            else cout << "Removing Item Failed1\n";
+                        }
                     }
                 }
             }
