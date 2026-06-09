@@ -273,7 +273,7 @@ int main() {
                                 }
                                 else if (edchoice == 6) {
                                     system("cls");
-                                    cout << "Enter New Description : "; string x; getline(cin, x);
+                                    cout << "Enter New Description : "; string x; cin.ignore(); getline(cin, x); 
                                     SelectedRest->Setdesc(x);
                                     continue;
                                 }
@@ -286,6 +286,42 @@ int main() {
                             }
                         }
                     }
+                }
+            }
+        }
+        else if (choice == 3) {
+            while(1){
+                system("cls");
+                cout << "--- Now You Are Admin ---\n\n";
+                vector <Restaurant> AllRest = restDAO.FindAll();
+                cout << "  All Restaurants: \n";
+                for (int i=0; i<AllRest.size(); i++) cout << "    [ " << AllRest[i].GetID() << " ] " << AllRest[i].Getname() << endl;
+                cout << "  \nChoose What YOu Want To Do : \n";
+                cout << "    [1] Add Restaurant , [2] Remove Restaurant\n";
+                cout << "    [0] Back To Main Menu\n";
+                int achoice; cin >> achoice;
+                if (achoice == 0) break;
+                else if (achoice == 1) {
+                    system("cls");
+                    cout << "Enter new Restaurant ID : "; int id; cin >> id; cin.ignore(); cout << endl;
+                    cout << "Enter new Restaurant Name : "; string name; cin >> name; cout << endl;
+                    cout << "Enter new Restaurant Address : ";
+                    cout << "\n City , Street , StreetNo , BuildingNo\n"; Address adrs; cin >> adrs; cout << endl;
+                    cout << "Enter new Restaurant Prep_Time : "; int pt; cin >> pt; cout << endl;
+                    cout << "Enter new Restaurant Phone_Number : "; string pn; cin >> pn; cout << endl;
+                    cout << "Enter new Restaurant Description : "; string desc; cin.ignore(); getline(cin, desc); cout << endl;
+                    cout << "Enter new Restaurant Status ([1] Active , [0] InActive): "; int sta; cin >> sta; cout << endl;
+                    Status statt; (sta == 1) ? statt = Active : statt = InActive;
+                    Menu m(id);
+                    Restaurant newRest(id, name, adrs, pt, pn, desc, m, statt);
+                    if (restDAO.Insert(newRest)) cout << "\nRestaurant Added Successfully\n";
+                    else cout << "Adding Restaurant Failed!\n";
+                }
+                else if (achoice == 2) {
+                    system("cls");
+                    cout << "Enter Restaurant ID To Remove : "; int x; cin >> x;
+                    if (restDAO.Remove(x)) cout << "  Restaurant Removed Successfully!\n";
+                    else cout << "  Removing Restaurant Failed!\n";
                 }
             }
         }
