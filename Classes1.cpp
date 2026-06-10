@@ -194,6 +194,18 @@ int Cart::GetSize() {
 
 vector <pair<Item*, int>> Cart::GetItems() { return items; }
 
+void Cart::Display() {
+    if (items.size() == 0) {
+        cout << "=== Yor Cart Is Empty! ===\n";
+        return;
+    }
+    cout << "=== Your Cart ===";
+    for (int i=0; i<items.size(); i++) {
+        cout << "[ " << items[i].first->GetID() << " ] " << items[i].first->Getname()
+             << "( Amount = " << items[i].second << " , Price = " << items[i].first->GetPrice() << " )\n";
+    }
+}
+
 
 ostream& operator << (ostream& output, Type type) {
     switch (type) {

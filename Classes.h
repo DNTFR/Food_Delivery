@@ -177,6 +177,7 @@ class Cart {
         void Clear();
         int GetSize();
         vector <pair<Item*, int>> GetItems();
+        void Display();
 };
 
 ostream& operator << (ostream& output, Type type);
