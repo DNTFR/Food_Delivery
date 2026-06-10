@@ -167,10 +167,10 @@ class DrinkC : public Item {
 class Cart {
     private:
         vector <pair<Item*, int>> items;
-        double Price;
+        int RestID;
     public: 
         Cart();
-        void AddItem(Item* item, int count);
+        void AddItem(Item* item, int count, int id);
         void UpdateCount(int ind, int count);
         void RemoveItem(int ind);
         double GetPrice();

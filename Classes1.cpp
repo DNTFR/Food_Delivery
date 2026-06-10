@@ -158,9 +158,10 @@ void DrinkC::Display() {
 }
 void DrinkC::SetVolume(double Volume) { this->Volume = Volume; }
 
-Cart::Cart() {}
+Cart::Cart() : RestID(-1) {}
 
-void Cart::AddItem(Item* item, int count) {
+void Cart::AddItem(Item* item, int count, int id) {
+    if (items.empty()) RestID = id;
     for (int i=0; i<items.size(); i++) {
         if (items[i].first->GetID() == item->GetID()) {
             items[i].second += count;
@@ -176,6 +177,7 @@ void Cart::UpdateCount(int ind, int count) {
 
 void Cart::RemoveItem(int ind) {
     items.erase(items.begin() + ind);
+    if (items.empty()) RestID = -1;
 }
 
 double Cart::GetPrice() {
@@ -186,7 +188,10 @@ double Cart::GetPrice() {
     return tot;
 }
 
-void Cart::Clear() { items.clear(); }
+void Cart::Clear() { 
+    items.clear(); 
+    RestID = -1;
+}
 
 int Cart::GetSize() {
     return items.size();
