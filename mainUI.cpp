@@ -186,11 +186,16 @@ int main() {
                             cout << "Enter New Count : "; int e; cin >> e; cout << endl;
                             if (w == 0) break;
                             else {
-                                cart.UpdateCount(w, e);
-                                continue;
+                                if (e > 0 && itemDAO.FindById(w)){
+                                    cart.UpdateCount(w, e);
+                                    continue;   
+                                }
+                                else {
+                                    cout << "Invalid Data!\n";
+                                    continue;
+                                }
                             }
                         }
-                        
                     }
                 }
             }
