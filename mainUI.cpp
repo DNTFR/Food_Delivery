@@ -99,6 +99,7 @@ int main() {
                 cout << "--- Now You Are Customer ---\n\n";
                 cout << "  [1] View Restaurants & Menu\n";
                 cout << "  [2] Manage Cart\n";
+                cout << "  [3] History\n";
                 cout << "  [0] Back To Main Menu\n";
                 int cuschoice; cin >> cuschoice;
                 if (cuschoice == 0) break;
@@ -122,6 +123,7 @@ int main() {
                         if (!cart.Empty() && restChoice != cart.GetRestID()) {
                             cout << "You Have Items From Another Restaurant!\n";
                             cout << "Please Finalize Your Order Or Clear Cart!\n";
+                            getchar(); getchar();
                             continue;
                         }
                         Restaurant* SelectedRest = restDAO.FindById(restChoice);
@@ -173,7 +175,7 @@ int main() {
                             if (w == 0) break;
                             else {
                                 cart.RemoveItem(w);
-                                break;
+                                continue;;
                             }
                         }
                         else if (cachoice == 1) {
@@ -185,9 +187,10 @@ int main() {
                             if (w == 0) break;
                             else {
                                 cart.UpdateCount(w, e);
-                                break;
+                                continue;
                             }
                         }
+                        
                     }
                 }
             }
