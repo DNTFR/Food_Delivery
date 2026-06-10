@@ -174,8 +174,10 @@ class Cart {
         void UpdateCount(int ind, int count);
         void RemoveItem(int ind);
         double GetPrice();
+        int GetRestID();
         void Clear();
         int GetSize();
+        int Empty();
         vector <pair<Item*, int>> GetItems();
         void Display();
 };

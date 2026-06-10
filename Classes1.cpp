@@ -188,6 +188,10 @@ double Cart::GetPrice() {
     return tot;
 }
 
+int Cart::Empty() { return items.empty(); }
+
+int Cart::GetRestID() { return RestID; }
+
 void Cart::Clear() { 
     items.clear(); 
     RestID = -1;
@@ -204,13 +208,13 @@ void Cart::Display() {
         cout << "=== Yor Cart Is Empty! ===\n";
         return;
     }
-    cout << "=== Your Cart ===";
+    cout << "\n\n=== Your Cart ===\n\n";
     for (int i=0; i<items.size(); i++) {
         cout << "[ " << i+1 << " ] " << items[i].first->Getname()
              << "( Amount = " << items[i].second << " , Price = " << items[i].first->GetPrice() << " )\n";
     }
-    cout << "Total Price : " << this->GetPrice() << endl;
-    cout << "Restaurant ID : " << RestID << endl;
+    cout << "\nTotal Price : " << this->GetPrice() << endl;
+    cout << "Restaurant ID : " << RestID << "\n\n";
 }
 
 

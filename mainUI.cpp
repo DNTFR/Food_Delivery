@@ -97,40 +97,76 @@ int main() {
                 system("cls");
                 Cart cart;
                 cout << "--- Now You Are Customer ---\n\n";
-                cout << "  Available Restaurants:\n\n";
-                vector <Restaurant> ActiveRests = restDAO.FindActive();
-                if (ActiveRests.size() == 0) {
-                    cout << "    There is No Active Restaurants!\n";
-                    break;
-                }
-                else {
-                    for (int i=0; i<ActiveRests.size(); i++) {
-                        cout << "    [ " << ActiveRests[i].GetID() << " ] " << ActiveRests[i].Getname()
-                             << " (Prepare Time : " << ActiveRests[i].GetPrep() << "mins)\n";
+                cout << "  [1] View Restaurants & Menu\n";
+                cout << "  [2] Manage Cart\n";
+                cout << "  [0] Back To Main Menu\n";
+                int cuschoice; cin >> cuschoice;
+                if (cuschoice == 0) break;
+                else if (cuschoice == 1) {
+                    cout << "  Available Restaurants:\n\n";
+                    vector <Restaurant> ActiveRests = restDAO.FindActive();
+                    if (ActiveRests.size() == 0) {
+                        cout << "    There is No Active Restaurants!\n";
+                        break;
                     }
-                    cout << endl;
-                    int restChoice;
-                    cout << "  [0] Back to Main Menu\n  Or\n";
-                    cout << "  Enter Restaurant ID : "; cin >> restChoice; cout << endl;
-                    if (restChoice == 0) break;
-                    Restaurant* SelectedRest = restDAO.FindById(restChoice);
-                    if (SelectedRest == nullptr) {
-                        cout << "\tInvalid ID!! Try Again!\n";
-                        continue;
-                    }
-                    while (1) {
-                        cout << "===== Menu Of " << SelectedRest->Getname() << " Restaurant ===== \n";
-                        vector <Item*> MenuRest = itemDAO.FindByRestaurant(restChoice);
-                        for (int i=0; i<MenuRest.size(); i++){
-                            MenuRest[i]->Display();
+                    else {
+                        for (int i=0; i<ActiveRests.size(); i++) {
+                            cout << "    [ " << ActiveRests[i].GetID() << " ] " << ActiveRests[i].Getname()
+                                << " (Prepare Time : " << ActiveRests[i].GetPrep() << "mins)\n";
                         }
-                        cout << "\n[0] Back To Restaurants\n";
-                        cout << "[1] Order Items\n";
-                        int ordChoice; cin >> ordChoice;
-                        if (ordChoice == 0) break;
-                        else {
-                            system("cls");
-                            cout << "Coming Soon\n";
+                        cout << endl;
+                        int restChoice;
+                        cout << "  [0] Back to Main Menu\n  Or\n";
+                        cout << "  Enter Restaurant ID : "; cin >> restChoice; cout << endl;
+                        if (restChoice == 0) break;
+                        if (!cart.Empty() && restChoice != cart.GetRestID()) {
+                            cout << "You Have Items From Another Restaurant!\n";
+                            cout << "Please Finalize Your Order Or Clear Cart!\n";
+                            continue;
+                        }
+                        Restaurant* SelectedRest = restDAO.FindById(restChoice);
+                        if (SelectedRest == nullptr) {
+                            cout << "\tInvalid ID!! Try Again!\n";
+                            continue;
+                        }
+                        while (1) {
+                            cout << "===== Menu Of " << SelectedRest->Getname() << " Restaurant ===== \n";
+                            vector <Item*> MenuRest = itemDAO.FindByRestaurant(restChoice);
+                            for (int i=0; i<MenuRest.size(); i++){
+                                MenuRest[i]->Display();
+                            }
+                            cout << "\n[0] Back To Restaurants\n";
+                            cout << "[1] Add Item To Cart\n";
+                            int ordChoice; cin >> ordChoice;
+                            if (ordChoice == 0) break;
+                            else {
+                                cout << "  Enter Item ID To Purchase : "; int q; cin >> q; cout << endl;
+                                cout << "  Enter Count : "; int t; cin >> t; cout << endl;
+                                Item* ChosenItem = itemDAO.FindById(q);
+                                if (t>0 && ChosenItem) {
+                                    cart.AddItem(ChosenItem, t, restChoice);
+                                    cout << "Item Added Successfully\n";
+                                }
+                                else {
+                                    cout << "Adding Item Failed!\n";
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (cuschoice == 2) {
+                    while(1){
+                        system("cls");
+                        cart.Display();
+                        cout << "  [1] Edit Item Count\n";
+                        cout << "  [2] Remove Item\n";
+                        cout << "  [3] Finalize Order\n";
+                        cout << "  [0] Back\n";
+                        int cachoice; cin >> cachoice;
+                        if (cachoice == 0) break;
+                        else if (cachoice == 1) {
+                            
                         }
                     }
                 }
