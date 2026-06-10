@@ -158,6 +158,43 @@ void DrinkC::Display() {
 }
 void DrinkC::SetVolume(double Volume) { this->Volume = Volume; }
 
+Cart::Cart() {}
+
+void Cart::AddItem(Item* item, int count) {
+    for (int i=0; i<items.size(); i++) {
+        if (items[i].first->GetID() == item->GetID()) {
+            items[i].second += count;
+            return;
+        }
+    }
+    items.push_back(make_pair(item, count));
+}
+
+void Cart::UpdateCount(int ind, int count) {
+    items[ind].second += count;
+}
+
+void Cart::RemoveItem(int ind) {
+    items.erase(items.begin() + ind);
+}
+
+double Cart::GetPrice() {
+    double tot = 0;
+    for (int i=0; i<items.size(); i++) {
+        tot += items[i].first->GetPrice() * items[i].second;
+    }
+    return tot;
+}
+
+void Cart::Clear() { items.clear(); }
+
+int Cart::GetSize() {
+    return items.size();
+}
+
+vector <pair<Item*, int>> Cart::GetItems() { return items; }
+
+
 ostream& operator << (ostream& output, Type type) {
     switch (type) {
         case Food: output << "Food"; break;

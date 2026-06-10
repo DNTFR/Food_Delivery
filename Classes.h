@@ -164,6 +164,21 @@ class DrinkC : public Item {
         double Volume;
 };
 
+class Cart {
+    private:
+        vector <pair<Item*, int>> items;
+        double Price;
+    public: 
+        Cart();
+        void AddItem(Item* item, int count);
+        void UpdateCount(int ind, int count);
+        void RemoveItem(int ind);
+        double GetPrice();
+        void Clear();
+        int GetSize();
+        vector <pair<Item*, int>> GetItems();
+};
+
 ostream& operator << (ostream& output, Type type);
 ostream& operator << (ostream& output, Status status);
 ostream& operator << (ostream& output, Role role);
