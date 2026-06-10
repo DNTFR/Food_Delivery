@@ -206,9 +206,11 @@ void Cart::Display() {
     }
     cout << "=== Your Cart ===";
     for (int i=0; i<items.size(); i++) {
-        cout << "[ " << items[i].first->GetID() << " ] " << items[i].first->Getname()
+        cout << "[ " << i+1 << " ] " << items[i].first->Getname()
              << "( Amount = " << items[i].second << " , Price = " << items[i].first->GetPrice() << " )\n";
     }
+    cout << "Total Price : " << this->GetPrice() << endl;
+    cout << "Restaurant ID : " << RestID << endl;
 }
 
 

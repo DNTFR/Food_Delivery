@@ -95,6 +95,7 @@ int main() {
         else if (choice == 1) {
             while(1){    
                 system("cls");
+                Cart cart;
                 cout << "--- Now You Are Customer ---\n\n";
                 cout << "  Available Restaurants:\n\n";
                 vector <Restaurant> ActiveRests = restDAO.FindActive();
