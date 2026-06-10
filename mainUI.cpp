@@ -93,9 +93,9 @@ int main() {
             break;
         }  
         else if (choice == 1) {
+            Cart cart;
             while(1){    
                 system("cls");
-                Cart cart;
                 cout << "--- Now You Are Customer ---\n\n";
                 cout << "  [1] View Restaurants & Menu\n";
                 cout << "  [2] Manage Cart\n";
@@ -165,8 +165,28 @@ int main() {
                         cout << "  [0] Back\n";
                         int cachoice; cin >> cachoice;
                         if (cachoice == 0) break;
+                        else if (cachoice == 2) {
+                            system("cls");
+                            cart.Display();
+                            cout << "[0] Back\nOr\n";
+                            cout << "Enter Item Number To Remove : "; int w; cin >> w;
+                            if (w == 0) break;
+                            else {
+                                cart.RemoveItem(w);
+                                break;
+                            }
+                        }
                         else if (cachoice == 1) {
-                            
+                            system("cls");
+                            cart.Display();
+                            cout << "[0] Back\n";
+                            cout << "Enter Item Number To Edit : "; int w; cin >> w; cout << endl;
+                            cout << "Enter New Count : "; int e; cin >> e; cout << endl;
+                            if (w == 0) break;
+                            else {
+                                cart.UpdateCount(w, e);
+                                break;
+                            }
                         }
                     }
                 }
