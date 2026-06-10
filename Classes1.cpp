@@ -172,11 +172,11 @@ void Cart::AddItem(Item* item, int count, int id) {
 }
 
 void Cart::UpdateCount(int ind, int count) {
-    items[ind].second += count;
+    items[ind-1].second = count;
 }
 
 void Cart::RemoveItem(int ind) {
-    items.erase(items.begin() + ind);
+    items.erase(items.begin() + ind - 1);
     if (items.empty()) RestID = -1;
 }
 
