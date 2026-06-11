@@ -65,6 +65,32 @@ int FetchRestaurantOrdersCallback(void* data, int argc, char** argv, char** azCo
     return 0;
 }
 
+int SingleValueCallback(void* data, int argc, char** argv, char** azColName) {
+    double* value = static_cast<double*>(data);
+    if (argc > 0 && argv[0]) {
+        *value = atof(argv[0]);
+    }
+    return 0;
+}
+
+struct ActivityReport {
+    int restId;
+    int orderCount;
+    double totalSales;
+};
+
+int ActivityReportCallback(void* data, int argc, char** argv, char** azColName) {
+    auto* reportList = static_cast<vector<ActivityReport>*>(data);
+    if (argc >= 3 && argv[0] && argv[1] && argv[2]) {
+        ActivityReport rep;
+        rep.restId = atoi(argv[0]);
+        rep.orderCount = atoi(argv[1]);
+        rep.totalSales = atof(argv[2]);
+        reportList->push_back(rep);
+    }
+    return 0;
+}
+
 int main() {
     DatabaseManager db;
     if (!db.open("food_delivery.db")) {
@@ -614,7 +640,9 @@ int main() {
                 cout << "  All Restaurants: \n";
                 for (int i=0; i<AllRest.size(); i++) cout << "    [ " << AllRest[i].GetID() << " ] " << AllRest[i].Getname() << endl;
                 cout << "  \nChoose What YOu Want To Do : \n";
-                cout << "    [1] Add Restaurant , [2] Remove Restaurant\n";
+                cout << "    [1] Add Restaurant\n";
+                cout << "    [2] Remove Restaurant\n";
+                cout << "    [3] Reports\n";
                 cout << "    [0] Back To Main Menu\n";
                 int achoice; cin >> achoice;
                 if (achoice == 0) break;
@@ -639,6 +667,51 @@ int main() {
                     cout << "Enter Restaurant ID To Remove : "; int x; cin >> x;
                     if (restDAO.Remove(x)) cout << "  Restaurant Removed Successfully!\n";
                     else cout << "  Removing Restaurant Failed!\n";
+                }
+                else if (achoice == 3) {
+                    system("cls");
+                    cout << "--- SYSTEM ADMIN REPORTS & ANALYTICS ---\n";
+
+                    double totalOrders = 0;
+                    string countSql = "SELECT COUNT(*) FROM orders;";
+                    db.query(countSql, SingleValueCallback, &totalOrders);
+                    double totalSales = 0;
+                    string salesSql = "SELECT SUM(total_price) FROM orders WHERE status = 'Delivered';";
+                    db.query(salesSql, SingleValueCallback, &totalSales);
+
+                    double grossSales = 0;
+                    string grossSql = "SELECT SUM(total_price) FROM orders;";
+                    db.query(grossSql, SingleValueCallback, &grossSales);
+
+                    cout << " --- Overall Orders ---\n";
+                    cout << "  Total Orders Placed:     " << (int)totalOrders << " orders\n";
+                    cout << "  Net Revenue (Delivered): " << totalSales << " Toman\n";
+                    cout << "  Gross Sales (All Orders): " << grossSales << " Toman\n\n";
+
+                    cout << "--- Restaurant Activity ---\n";
+                    cout << "   Rest ID | Total Orders Received | Total Revenue\n";
+
+                    vector<ActivityReport> reports;
+                    string activitySql = "SELECT restaurant_id, COUNT(id), SUM(total_price) "
+                                         "FROM orders GROUP BY restaurant_id ORDER BY SUM(total_price) DESC;";
+                    db.query(activitySql, ActivityReportCallback, &reports);
+
+                    if (reports.empty()) {
+                        cout << "No restaurant activity!\n";
+                    } else {
+                        for (size_t i = 0; i < reports.size(); i++) {
+                            Restaurant* r = restDAO.FindById(reports[i].restId);
+                            string restName = r ? r->Getname() : "Unknown";
+
+                            cout << "    [ " << reports[i].restId << " ] " << restName
+                                 << "| " << reports[i].orderCount << " orders"
+                                 << " | " << reports[i].totalSales << " Toman\n";
+                            if(r) delete r;
+                        }
+                    }
+                    cout << "\nPress any key to Back";
+                    cin.ignore();
+                    cin.get();
                 }
             }
         }
