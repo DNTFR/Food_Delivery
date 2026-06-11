@@ -261,10 +261,8 @@ int main() {
                                 if (itemsSavedSuccessfully) {
                                     cout << "\n Order #" << lastOrderId << " Placed Successfully!\n";
                                     cart.Clear();
-                                } else {
-                                    cout << "\nSaving Items To Cart Failed!\n";
-                                }
-                                break;
+                                } else cout << "\nSaving Items To Cart Failed!\n";
+                                getchar(); getchar(); break;
                             }
                         }   
                     }
