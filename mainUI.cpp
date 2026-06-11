@@ -6,6 +6,14 @@
 
 using namespace std;
 
+int LastIdCallback(void* data, int argc, char** argv, char** azColName) {
+    int* lastId = static_cast<int*>(data);
+    if (argc > 0 && argv[0]) {
+        *lastId = atoi(argv[0]);
+    }
+    return 0;
+}
+
 int main() {
     DatabaseManager db;
     if (!db.open("food_delivery.db")) {
@@ -37,6 +45,22 @@ int main() {
         "prep_time INTEGER, "
         "volume REAL);";
 
+    string createOrdersTable = 
+        "CREATE TABLE IF NOT EXISTS orders ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "restaurant_id INTEGER, "
+        "total_price REAL, "
+        "status TEXT);";
+
+    string createOrderItemsTable = 
+        "CREATE TABLE IF NOT EXISTS order_items ("
+        "order_id INTEGER, "
+        "item_id INTEGER, "
+        "quantity INTEGER, "
+        "price REAL);";
+
+    db.execute(createOrdersTable);
+    db.execute(createOrderItemsTable);
     db.execute(createRestaurantTable);
     db.execute(createMenuTable);
     RestaurantDAO restDAO(db);
@@ -196,10 +220,58 @@ int main() {
                                 }
                             }
                         }
+                        else if (cachoice == 3) {
+                            cart.Display();
+                            cout << "\n  Are You Sure You Want To Finalize Your Order ? ([Y] Yes , [N] No) ";
+                            char c; cin >> c;
+                            if (c == 'N') break;
+                            else {
+                                int tarRestID = cart.GetRestID();
+                                double finPrice = cart.GetPrice();
+                                string insertOrderSql = "INSERT INTO orders (restaurant_id, total_price, status) VALUES (" 
+                                                    + to_string(tarRestID) + ", " 
+                                                    + to_string(finPrice) + ", 'Pending');";
+                                if (!db.execute(insertOrderSql)) {
+                                    cout << "\nCreating Order Failed!\n";
+                                    break;
+                                }
+                                
+                                int lastOrderId = 0;
+                                db.query("SELECT last_insert_rowid();", LastIdCallback, &lastOrderId);
+                                
+                                bool itemsSavedSuccessfully = true;
+                                auto cartItems = cart.GetItems();
+                                
+                                for (size_t i = 0; i < cartItems.size(); i++) {
+                                    Item* item = cartItems[i].first;
+                                    int qty = cartItems[i].second;
+                                    double unitPrice = item->GetPrice();
+                                    
+                                    string insertItemSql = "INSERT INTO order_items (order_id, item_id, quantity, price) VALUES ("
+                                                        + to_string(lastOrderId) + ", "
+                                                        + to_string(item->GetID()) + ", "
+                                                        + to_string(qty) + ", "
+                                                        + to_string(unitPrice) + ");";
+                                    
+                                    if (!db.execute(insertItemSql)) {
+                                        itemsSavedSuccessfully = false;
+                                    }
+                                }
+                                
+                                if (itemsSavedSuccessfully) {
+                                    cout << "\n Order #" << lastOrderId << " Placed Successfully!\n";
+                                    cart.Clear();
+                                } else {
+                                    cout << "\nSaving Items To Cart Failed!\n";
+                                }
+                                break;
+                            }
+                        }   
                     }
                 }
             }
         }
+    
         else if (choice == 2) {
             while(1) {
                 system("cls");
