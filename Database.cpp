@@ -51,23 +51,18 @@ bool DatabaseManager::query(const string& sql,
         cerr << "Database not connected!" << endl;
         return false;
     }
-    
     char* messageError = nullptr;
     int exit = sqlite3_exec(db, sql.c_str(), callback, data, &messageError);
-    
     if (exit != SQLITE_OK) {
         cerr << "Query Error: " << messageError << endl;
         sqlite3_free(messageError);
         return false;
     }
-    
     return true;
 }
 
 static int callback(void* data, int argc, char** argv, char** azColName) {
-    for (int i = 0; i < argc; i++) {
-        cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << endl;
-    }
+    for (int i = 0; i < argc; i++) cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << endl;
     cout << "--------------------------\n";
     return 0;
 }

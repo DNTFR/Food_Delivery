@@ -13,7 +13,7 @@ class DatabaseManager {
         
         bool execute(const string& sql);
         bool selectWithCallback(const string& sql); 
-         bool query(const string& sql, 
+        bool query(const string& sql, 
                int (*callback)(void*, int, char**, char**), 
                void* data = nullptr);       
 
