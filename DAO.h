@@ -1,7 +1,7 @@
 #ifndef DAO_H
 #define DAO_H
-#include "Classes.h"
 #include "Database.h"
+#include "Classes.h"
 #include <vector>
 using namespace std;
 

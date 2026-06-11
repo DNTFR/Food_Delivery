@@ -40,7 +40,6 @@ bool RestaurantDAO::Insert(const Restaurant& r) {
 bool RestaurantDAO::Update(const Restaurant& r) {
     std::stringstream sql;
     Address addr = r.Getaddress();
-
     sql << "UPDATE restaurants SET "
         << "name = '" << r.Getname() << "', "
         << "city = '" << addr.GetCity() << "', "
@@ -64,8 +63,7 @@ bool RestaurantDAO::Remove(int id) {
 Restaurant* RestaurantDAO::FindById(int id) {
     stringstream sql;
     sql << "SELECT * FROM restaurants WHERE id = " << id << ";";
-    vector<Restaurant> results;
-
+    vector <Restaurant> results;
     if (db.query(sql.str(), RestaurantCallback, &results)) {
         if (!results.empty()) {
             return new Restaurant(results[0]);
@@ -75,14 +73,14 @@ Restaurant* RestaurantDAO::FindById(int id) {
 }
 
 vector <Restaurant> RestaurantDAO::FindAll() {
-    vector<Restaurant> list;
+    vector <Restaurant> list;
     string sql = "SELECT * FROM restaurants;";
     db.query(sql, RestaurantCallback, &list);
     return list;
 }
 
 vector <Restaurant> RestaurantDAO::FindActive() {
-    vector<Restaurant> list;
+    vector <Restaurant> list;
     string sql = "SELECT * FROM restaurants WHERE status = 1;";
     db.query(sql, RestaurantCallback, &list);
     return list;

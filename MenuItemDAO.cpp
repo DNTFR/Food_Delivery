@@ -4,7 +4,6 @@
 #include <sstream>
 #include <vector>
 #include <cstdlib>
-
 using namespace std;
 
 MenuItemDAO::MenuItemDAO(DatabaseManager& database) : db(database) {}
@@ -54,7 +53,6 @@ bool MenuItemDAO::Insert(Item* item, int RestID) {
             << typeStr << "', "
             << (item->Getstatus() == Active ? 1 : 0) << ", 0, 0.0);";
     }
-    
     return db.execute(sql.str());
 }
 
@@ -73,7 +71,6 @@ bool MenuItemDAO::Update(Item* item) {
         << "price = " << item->GetPrice() << ", "
         << "type = '" << typeStr << "', "
         << "is_available = " << (item->Getstatus() == Active ? 1 : 0);
-    
     if (item->Gettype() == Food) {
         FoodC* food = dynamic_cast<FoodC*>(item);
         sql << ", prep_time = " << (food ? food->GetPrep() : 0) << ", volume = 0.0 ";
@@ -98,22 +95,18 @@ bool MenuItemDAO::Remove(int id) {
 int MenuItemDAO::ItemCallback(void* data, int argc, char** argv, char** azColName) {
     vector<Item*>* items = static_cast<vector<Item*>*>(data);
     if (!argv) return 0;
-    
     int id = argv[0] ? atoi(argv[0]) : 0;
     string name = argv[2] ? argv[2] : "";
     string description = argv[3] ? argv[3] : "";
     double price = argv[4] ? atof(argv[4]) : 0.0;
     string typeStr = argv[5] ? argv[5] : "food";
     int isAvailable = argv[6] ? atoi(argv[6]) : 1;
-    
     Type type;
     if (typeStr == "food") type = Food;
     else if (typeStr == "drink") type = Drink;
     else type = Other;
-    
     Status status = (isAvailable == 1) ? Active : InActive;
     Item* item = nullptr;
-    
     if (type == Food) {
         int prepTime = (argc > 7 && argv[7]) ? atoi(argv[7]) : 30;
         item = new FoodC(id, name, description, price, type, status, prepTime);
@@ -122,21 +115,15 @@ int MenuItemDAO::ItemCallback(void* data, int argc, char** argv, char** azColNam
         double volume = (argc > 8 && argv[8]) ? atof(argv[8]) : 250.0;
         item = new DrinkC(id, name, description, price, type, status, volume);
     }
-    else {
-        item = new Item(id, name, description, price, type, status);
-    }
-    
-    if (item) {
-        items->push_back(item);
-    }
+    else item = new Item(id, name, description, price, type, status);
+    if (item) items->push_back(item);
     return 0;
 }
 
 Item* MenuItemDAO::FindById(int id) {
     stringstream sql;
     sql << "SELECT * FROM menu_items WHERE id = " << id << ";";
-    vector<Item*> results;
-    
+    vector <Item*> results;
     if (db.query(sql.str(), reinterpret_cast<int(*)(void*, int, char**, char**)>(ItemCallback), &results)) {
         if (!results.empty()) {
             return results[0];
@@ -146,10 +133,9 @@ Item* MenuItemDAO::FindById(int id) {
 }
 
 vector<Item*> MenuItemDAO::FindByRestaurant(int restaurantId) {
-    vector<Item*> results;
+    vector <Item*> results;
     stringstream sql;
     sql << "SELECT * FROM menu_items WHERE restaurant_id = " << restaurantId << ";";
-    
     db.query(sql.str(), reinterpret_cast<int(*)(void*, int, char**, char**)>(ItemCallback), &results);
     return results;
 }
