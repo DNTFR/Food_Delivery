@@ -589,7 +589,6 @@ int main() {
                 int achoice; cin >> achoice;
                 if (achoice == 0) break;
                 else if (achoice == 1) {
-                    system("cls");
                     cout << "Enter new Restaurant ID : "; int id; cin >> id; cin.ignore(); cout << endl;
                     cout << "Enter new Restaurant Name : "; string name; cin >> name; cout << endl;
                     cout << "Enter new Restaurant Address : ";
@@ -605,13 +604,11 @@ int main() {
                     else cout << "Adding Restaurant Failed!\n";
                 }
                 else if (achoice == 2) {
-                    system("cls");
                     cout << "Enter Restaurant ID To Remove : "; int x; cin >> x;
                     if (restDAO.Remove(x)) cout << "  Restaurant Removed Successfully!\n";
                     else cout << "  Removing Restaurant Failed!\n";
                 }
                 else if (achoice == 3) {
-                    system("cls");
                     cout << "--- REPORTS ---\n";
                     double totalOrders = 0;
                     string countSql = "SELECT COUNT(*) FROM orders;";
