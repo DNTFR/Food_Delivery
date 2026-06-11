@@ -48,7 +48,7 @@ void Item::Setype(Type type) { this->type = type; }
 void Item::Setstatus(Status status) { this->status = status; }
 
 bool Item::IsActive() {
-    if (status) return 1;
+    if (status == Active) return 1;
     return 0;
 }
 void Item::Activate() { status = Active; }

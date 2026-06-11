@@ -156,10 +156,10 @@ int main() {
                             continue;
                         }
                         while (1) {
-                            cout << "===== Menu Of " << SelectedRest->Getname() << " Restaurant ===== \n";
+                            cout << "===== Menu Of " << SelectedRest->Getname() << " Restaurant ===== \n\n";
                             vector <Item*> MenuRest = itemDAO.FindByRestaurant(restChoice);
                             for (int i=0; i<MenuRest.size(); i++){
-                                MenuRest[i]->Display();
+                                if (MenuRest[i]->IsActive()) MenuRest[i]->Display();
                             }
                             cout << "\n[0] Back To Restaurants\n";
                             cout << "[1] Add Item To Cart\n";
