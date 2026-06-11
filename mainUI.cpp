@@ -461,36 +461,43 @@ int main() {
                                 else if (edchoice == 1) {
                                     cout << "Enter New ID : "; int x; cin >> x;
                                     SelectedRest->SetID(x);
+                                    restDAO.Update(*SelectedRest);
                                     continue;
                                 }
                                 else if (edchoice == 2) {
                                     cout << "Enter New Name : "; string x; cin >> x;
                                     SelectedRest->Setname(x);
+                                    restDAO.Update(*SelectedRest);
                                     continue;
                                 }
                                 else if (edchoice == 3) {
                                     cout << "Enter New Address : "; Address x; cin >> x;
                                     SelectedRest->Setaddress(x);
+                                    restDAO.Update(*SelectedRest);
                                     continue;
                                 }
                                 else if (edchoice == 4) {
                                     cout << "Enter New Prep_Time : "; int x; cin >> x;
                                     SelectedRest->SetPrep(x);
+                                    restDAO.Update(*SelectedRest);
                                     continue;
                                 }
                                 else if (edchoice == 5) {
                                     cout << "Enter New Phone_Number : "; string x; cin >> x;
                                     SelectedRest->SetPhone(x);
+                                    restDAO.Update(*SelectedRest);
                                     continue;
                                 }
                                 else if (edchoice == 6) {
                                     cout << "Enter New Description : "; string x; cin.ignore(); getline(cin, x); 
                                     SelectedRest->Setdesc(x);
+                                    restDAO.Update(*SelectedRest);
                                     continue;
                                 }
                                 else if (edchoice == 7) {
                                     cout << "Enter New Status ([1] Active , [0] InActive): "; int x; cin >> x;
                                     (x == 1) ? SelectedRest->SetStatus(Active) : SelectedRest->SetStatus(InActive);
+                                    restDAO.Update(*SelectedRest);
                                     continue;
                                 }
                             }
