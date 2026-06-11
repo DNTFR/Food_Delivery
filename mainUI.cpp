@@ -450,7 +450,7 @@ int main() {
                             Type typ;
                             string name, desc;
                             double price, volume;
-                            cout << "--- Adding/Updating Item ---\n";
+                            cout << "--- Adding/Updating Item ---\n\n";
                             cout << "  Enter Item ID : "; cin >> id; cin.ignore(); cout << endl;
                             if (cchoice == 2) itemDAO.FindById(id)->Display();
                             cout << "  Enter Item Name : "; getline(cin, name); cout << endl;
