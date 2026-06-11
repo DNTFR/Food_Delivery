@@ -51,8 +51,6 @@ bool Item::IsActive() {
     if (status == Active) return 1;
     return 0;
 }
-void Item::Activate() { status = Active; }
-void Item::DeActivate() { status = InActive; }
 
 void Item::Display() {
     cout << "  --- Item Details ---\n";
@@ -69,9 +67,7 @@ Menu::Menu(int ID) : RestaurantID(ID) {}
 
 int Menu::GetRestaurantId() { return RestaurantID; }
 
-vector <Item*> Menu::GetItems() {
-    return MenuItems;
-}
+vector <Item*> Menu::GetItems() { return MenuItems; }
 
 int Menu::FindItemIndex(int id) {
     for (int i=0; i<MenuItems.size(); i++) {
@@ -79,16 +75,10 @@ int Menu::FindItemIndex(int id) {
     }
     return -1;
 }
-void Menu::SetRestaurantId(int restaurantId) { RestaurantID = restaurantId; }
-void Menu::AddItem(Item* item) { 
-    MenuItems.push_back(item);   
-}
-void Menu::RemoveItem(int itemId) {
-    MenuItems.erase(MenuItems.begin() + FindItemIndex(itemId));
-}
-void Menu::UpdateItem(Item* item) {
 
-}
+void Menu::SetRestaurantId(int restaurantId) { RestaurantID = restaurantId; }
+void Menu::AddItem(Item* item) { MenuItems.push_back(item); }
+void Menu::RemoveItem(int itemId) { MenuItems.erase(MenuItems.begin() + FindItemIndex(itemId)); }
 
 void Menu::DisplayAll() const {
     for (auto item : MenuItems) {
@@ -126,12 +116,14 @@ string Restaurant::Getdesc() const { return etc; }
 Menu& Restaurant::GetMenu() { return menu; }
 Status Restaurant::GetStatus() const { return status; }
 
-
-
 FoodC::FoodC() : Item() , Prep_Time(-1) {}
+
 FoodC::FoodC(int id, string n, string e, double p, Type t, Status s, int pr)
 : Item(id, n, e, p, t, s) , Prep_Time(pr) {}
+
 int FoodC::GetPrep() const { return Prep_Time; }
+void FoodC::SetPrep(int Prep) { Prep_Time = Prep; }
+
 void FoodC::Display() {
     cout << "  --- Item Details ---\n";
     cout << "     " << type << "[" << status << "]\n";
@@ -141,12 +133,15 @@ void FoodC::Display() {
     cout << "     PrepTime: " << Prep_Time << endl;
     cout << "  --------------------\n";
 }
-void FoodC::SetPrep(int Prep) { Prep_Time = Prep; }
 
 DrinkC::DrinkC() : Item() , Volume(-1) {}
+
 DrinkC::DrinkC(int id, string n, string e, double p, Type t, Status s, double v)
 : Item(id, n, e, p, t, s) , Volume(v) {}
+
 double DrinkC::GetVolume() const { return Volume; }
+void DrinkC::SetVolume(double Volume) { this->Volume = Volume; }
+
 void DrinkC::Display() {
     cout << "  --- Item Details ---\n";
     cout << "     " << type << "[" << status << "]\n";
@@ -156,7 +151,6 @@ void DrinkC::Display() {
     cout << "     Volume: " << Volume << endl;
     cout << "  --------------------\n";
 }
-void DrinkC::SetVolume(double Volume) { this->Volume = Volume; }
 
 Cart::Cart() : RestID(-1) {}
 
@@ -171,9 +165,7 @@ void Cart::AddItem(Item* item, int count, int id) {
     items.push_back(make_pair(item, count));
 }
 
-void Cart::UpdateCount(int ind, int count) {
-    items[ind-1].second = count;
-}
+void Cart::UpdateCount(int ind, int count) { items[ind-1].second = count; }
 
 void Cart::RemoveItem(int ind) {
     items.erase(items.begin() + ind - 1);
@@ -191,24 +183,20 @@ double Cart::GetPrice() {
 int Cart::Empty() { return items.empty(); }
 
 int Cart::GetRestID() { return RestID; }
+int Cart::GetSize() { return items.size(); }
+vector <pair<Item*, int>> Cart::GetItems() { return items; }
 
 void Cart::Clear() { 
     items.clear(); 
     RestID = -1;
 }
 
-int Cart::GetSize() {
-    return items.size();
-}
-
-vector <pair<Item*, int>> Cart::GetItems() { return items; }
-
 void Cart::Display() {
     if (items.size() == 0) {
-        cout << "=== Yor Cart Is Empty! ===\n";
+        cout << "===== Yor Cart Is Empty! =====\n";
         return;
     }
-    cout << "=== Your Cart ===\n\n";
+    cout << "===== Your Cart =====\n\n";
     for (int i=0; i<items.size(); i++) {
         cout << "[ " << i+1 << " ] " << items[i].first->Getname()
              << " ( Amount = " << items[i].second << " , Price = " << items[i].first->GetPrice() << " )\n";
@@ -216,7 +204,6 @@ void Cart::Display() {
     cout << "\nTotal Price : " << this->GetPrice() << endl;
     cout << "Restaurant ID : " << RestID << "\n\n";
 }
-
 
 ostream& operator << (ostream& output, Type type) {
     switch (type) {
@@ -226,6 +213,7 @@ ostream& operator << (ostream& output, Type type) {
     }
     return output;
 }
+
 ostream& operator << (ostream& output, Status status) {
     switch (status) {
         case Active: output << "Active"; break;
@@ -233,6 +221,7 @@ ostream& operator << (ostream& output, Status status) {
     }
     return output;
 }
+
 ostream& operator << (ostream& output, Role role) {
     switch (role) {
         case Customer: output << "Customer"; break;

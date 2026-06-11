@@ -21,13 +21,6 @@ enum Status {
     InActive
 };
 
-class Admin {
-    public:
-        
-    private:
-
-};
-
 class Address {
     public:
         Address();
@@ -71,8 +64,6 @@ class Item {
         void Setstatus(Status status);
         
         bool IsActive();
-        void Activate();
-        void DeActivate();
 
         virtual void Display();
     protected:    
@@ -96,7 +87,7 @@ class Menu {
         void SetRestaurantId(int restaurantId);
         void AddItem(Item* item);
         void RemoveItem(int itemId);
-        void UpdateItem(Item* item); // monde
+        void UpdateItem(Item* item);
         
         void DisplayAll() const;
         void displayActive() const;
@@ -165,21 +156,24 @@ class DrinkC : public Item {
 };
 
 class Cart {
-    private:
-        vector <pair<Item*, int>> items;
-        int RestID;
     public: 
         Cart();
+
         void AddItem(Item* item, int count, int id);
         void UpdateCount(int ind, int count);
         void RemoveItem(int ind);
+
         double GetPrice();
         int GetRestID();
-        void Clear();
         int GetSize();
-        int Empty();
         vector <pair<Item*, int>> GetItems();
+
+        void Clear();
+        int Empty();
         void Display();
+    private:
+        vector <pair<Item*, int>> items;
+        int RestID;
 };
 
 ostream& operator << (ostream& output, Type type);
