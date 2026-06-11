@@ -52,6 +52,19 @@ int OrderDetailsCallback(void* data, int argc, char** argv, char** azColName) {
     return 0;
 }
 
+int FetchRestaurantOrdersCallback(void* data, int argc, char** argv, char** azColName) {
+    auto* ordersList = static_cast<vector<OrderData>*>(data);
+    if (argc >= 4 && argv[0] && argv[1] && argv[2] && argv[3]) {
+        OrderData order;
+        order.id = atoi(argv[0]);
+        order.restaurantId = atoi(argv[1]);
+        order.totalPrice = atof(argv[2]);
+        order.status = argv[3];
+        ordersList->push_back(order);
+    }
+    return 0;
+}
+
 int main() {
     DatabaseManager db;
     if (!db.open("food_delivery.db")) {
@@ -400,6 +413,7 @@ int main() {
                         cout << "  [2] Update Item\n";
                         cout << "  [3] Remove Item\n";
                         cout << "  [4] Edit Info\n";
+                        cout << "  [5] View/Update Orders\n";
                         cout << "  [0] Back To Restaurants\n";
                         int cchoice; cin >> cchoice;
                         if (cchoice == 0) break;
@@ -505,6 +519,86 @@ int main() {
                                     cout << "Enter New Status ([1] Active , [0] InActive): "; int x; cin >> x;
                                     (x == 1) ? SelectedRest->SetStatus(Active) : SelectedRest->SetStatus(InActive);
                                     continue;
+                                }
+                            }
+                        }
+                        else if (cchoice == 5) {
+                            while(1) {
+                                system("cls");
+                                cout << "--- RECEIVED ORDERS FOR : " << SelectedRest->Getname() << "\n";
+                                vector <OrderData> restOrders;
+                                string queryRestOrdersSql = "SELECT id, restaurant_id, total_price, status FROM orders WHERE restaurant_id = " 
+                                                           + to_string(ManageChoice) + " ORDER BY id DESC;";
+                                db.query(queryRestOrdersSql, FetchRestaurantOrdersCallback, &restOrders);
+                                if (restOrders.empty()) {
+                                    cout << "No orders received yet for your restaurant.\n";
+                                    getchar(); getchar();
+                                    break; 
+                                } 
+                                else {
+                                    for (size_t i = 0; i < restOrders.size(); i++) {
+                                        cout << "ORDER #" << restOrders[i].id << " | Current Status: [" << restOrders[i].status << "]\n";
+                                        cout << "(Item Name , Qty , Price , Total)\n\n";
+                                        vector<OrderItemInfo> details;
+                                        string queryDetailsSql = "SELECT item_id, quantity, price FROM order_items WHERE order_id = " 
+                                                                 + to_string(restOrders[i].id) + ";";
+                                        db.query(queryDetailsSql, OrderDetailsCallback, &details);
+
+                                        for (size_t j = 0; j < details.size(); j++) {
+                                            Item* foodItem = itemDAO.FindById(details[j].itemId);
+                                            cout << "[ " << j+1 << " ] ";
+                                            if (foodItem) {
+                                                double rowTotal = details[j].quantity * details[j].price;
+
+                                                cout << foodItem->Getname() << " , " << details[j].quantity << " , "
+                                                << details[j].price << "T , "
+                                                << rowTotal << " Toman\n";
+
+                                                delete foodItem; 
+                                            } else {
+                                                cout << "Unknown ID\n";
+                                            }
+                                        }
+                                    cout << "Total Income From This Order: " << restOrders[i].totalPrice << "Toman\n\n";
+                                    }
+                                }
+                                cout << "\n  [1] Update an Order Status\n";
+                                cout << "  [0] Back to Manager Menu\n";
+                                int ordchoice; cin >> ordchoice;
+                                if (ordchoice == 0) break;
+                                else if (ordchoice == 1) {
+                                    cout << "\n    Enter Order ID : ";
+                                    int ordID; cin >> ordID;
+                                    bool orderExists = false;
+                                    for(const auto& o : restOrders) {
+                                        if(o.id == ordID) {
+                                            orderExists = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!orderExists) {
+                                        cout << "Invalid Order ID!\n";
+                                        getchar(); getchar();
+                                        continue;
+                                    }
+                                    cout << "\n  Select New Status:\n";
+                                    cout << "    [1] Preparing \n";
+                                    cout << "    [2] Ready for Delivery \n";
+                                    cout << "    [3] Delivered\n";
+                                    int statchoice; cin >> statchoice;
+
+                                    string newStatus = "Pending";
+                                    if (statchoice == 1) newStatus = "Preparing";
+                                    else if (statchoice == 2) newStatus = "Ready For Delivery";
+                                    else if (statchoice == 3) newStatus = "Delivered";
+
+                                    string updateSql = "UPDATE orders SET status = '" + newStatus + "' WHERE id = " + to_string(ordID) + ";";
+                                    if (db.execute(updateSql)) {
+                                        cout << "\nOrder #" << ordID << " status updated to [" << newStatus << "].\n";
+                                    } else {
+                                        cout << "\nFailed To Update Status!\n";
+                                    }
+                                    break;
                                 }
                             }
                         }
