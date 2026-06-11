@@ -14,6 +14,44 @@ int LastIdCallback(void* data, int argc, char** argv, char** azColName) {
     return 0;
 }
 
+struct OrderData {
+    int id;
+    int restaurantId;
+    double totalPrice;
+    string status;
+};
+
+int FetchAllOrdersCallback(void* data, int argc, char** argv, char** azColName) {
+    auto* ordersList = static_cast<vector<OrderData>*>(data);
+    if (argc >= 4 && argv[0] && argv[1] && argv[2] && argv[3]) {
+        OrderData order;
+        order.id = atoi(argv[0]);
+        order.restaurantId = atoi(argv[1]);
+        order.totalPrice = atof(argv[2]);
+        order.status = argv[3];
+        ordersList->push_back(order);
+    }
+    return 0;
+}
+
+struct OrderItemInfo {
+    int itemId;
+    int quantity;
+    double price;
+};
+
+int OrderDetailsCallback(void* data, int argc, char** argv, char** azColName) {
+    auto* itemsList = static_cast<vector<OrderItemInfo>*>(data);
+    if (argc >= 3 && argv[0] && argv[1] && argv[2]) {
+        OrderItemInfo info;
+        info.itemId = atoi(argv[0]);
+        info.quantity = atoi(argv[1]);
+        info.price = atof(argv[2]);
+        itemsList->push_back(info);
+    }
+    return 0;
+}
+
 int main() {
     DatabaseManager db;
     if (!db.open("food_delivery.db")) {
@@ -259,13 +297,63 @@ int main() {
                                 }
                                 
                                 if (itemsSavedSuccessfully) {
-                                    cout << "\n Order #" << lastOrderId << " Placed Successfully!\n";
+                                    cout << "\nOrder #" << lastOrderId << " Placed Successfully!\n";
                                     cart.Clear();
                                 } else cout << "\nSaving Items To Cart Failed!\n";
                                 getchar(); getchar(); break;
                             }
                         }   
                     }
+                }
+                else if (cuschoice == 3) {
+                    system("cls");
+                    cout << "--- ALL PREVIOUS ORDERS & FULL DETAILS ---\n\n";
+
+                    vector <OrderData> allOrders;
+                    string queryAllOrdersSql = "SELECT id, restaurant_id, total_price, status FROM orders ORDER BY id DESC;";
+                    db.query(queryAllOrdersSql, FetchAllOrdersCallback, &allOrders);
+
+                    if (allOrders.empty()) {
+                        cout << "  You haven't placed any orders yet!\n";
+                    } 
+                    else {
+                        for (size_t i = 0; i < allOrders.size(); i++) {
+                            cout << " | ORDER #" << allOrders[i].id 
+                                 << " | Restaurant ID: " << allOrders[i].restaurantId
+                                 << " | Status: [" << allOrders[i].status << "]\n";
+                            cout << " (Item Name , Qty , Price , Total)\n\n";
+
+                            vector<OrderItemInfo> details;
+                            string queryDetailsSql = "SELECT item_id, quantity, price FROM order_items WHERE order_id = " 
+                                                     + to_string(allOrders[i].id) + ";";
+                            db.query(queryDetailsSql, OrderDetailsCallback, &details);
+
+                            if (details.empty()) {
+                                cout << "No item details found for this order.\n";
+                            } else {
+                                for (size_t j = 0; j < details.size(); j++) {
+                                    Item* foodItem = itemDAO.FindById(details[j].itemId);
+                                    cout << "[ " << j+1 << " ] ";
+                                    if (foodItem) {
+                                        double rowTotal = details[j].quantity * details[j].price;
+
+                                        cout << foodItem->Getname() << " , " << details[j].quantity << " , "
+                                        << details[j].price << "T , "
+                                        << rowTotal << " Toman\n";
+
+                                        delete foodItem; 
+                                    } else {
+                                        cout << "Unknown ID\n";
+                                    }
+                                }
+                            }
+                            cout << "\n--- Total Bill For This Order : " << allOrders[i].totalPrice << " Toman ---\n\n";
+                        }
+                    }
+
+                    cout << "Press any key to Back";
+                    cin.ignore();
+                    cin.get();
                 }
             }
         }
