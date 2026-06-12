@@ -54,7 +54,7 @@ bool Item::IsActive() {
 
 void Item::Display() {
     cout << "  --- Item Details ---\n";
-    cout << "     " << type << "[" << status << "]\n";
+    cout << "     " << type << " [" << status << "]\n";
     cout << "     " << name << "(" << ID << ")\n";
     cout << "     Description: " << etc << endl;
     cout << "     Price: " << Price << endl;

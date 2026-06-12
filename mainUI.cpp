@@ -465,7 +465,7 @@ int main() {
                                     continue;
                                 }
                                 else if (edchoice == 2) {
-                                    cout << "Enter New Name : "; string x; cin >> x;
+                                    cout << "Enter New Name : "; string x; cin.ignore(); getline(cin, x);
                                     SelectedRest->Setname(x);
                                     restDAO.Update(*SelectedRest);
                                     continue;
@@ -597,7 +597,7 @@ int main() {
                 if (achoice == 0) break;
                 else if (achoice == 1) {
                     cout << "Enter new Restaurant ID : "; int id; cin >> id; cin.ignore(); cout << endl;
-                    cout << "Enter new Restaurant Name : "; string name; cin >> name; cout << endl;
+                    cout << "Enter new Restaurant Name : "; string name; getline(cin, name); cout << endl;
                     cout << "Enter new Restaurant Address : ";
                     cout << "\n City , Street , StreetNo , BuildingNo\n"; Address adrs; cin >> adrs; cout << endl;
                     cout << "Enter new Restaurant Prep_Time : "; int pt; cin >> pt; cout << endl;
