@@ -1,5 +1,7 @@
 #include "User.h"
 #include <iostream>
+#include "DAO.h"
+#include "User.h"
 using namespace std;
 
 void NormalLevel::UpdateState(CustomerUser& customer) {

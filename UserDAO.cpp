@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "User.h"
 using namespace std;
 
 UserDAO::UserDAO(DatabaseManager& database) : db(database) {}

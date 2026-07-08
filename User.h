@@ -1,7 +1,6 @@
 #ifndef USER_H
 #define USER_H
 #include <iostream>
-#include "DAO.h"
 #include "classes.h"
 using namespace std;
 
@@ -90,6 +89,7 @@ class CustomerUser : public User {
         MembershipLevel* Level;
 };
 
+class UserDAO;
 class UserManager {
     private:
         vector <User*> allUsers;

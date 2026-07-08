@@ -2,7 +2,6 @@
 #define DAO_H
 #include "Database.h"
 #include "Classes.h"
-#include "User.h"
 #include <vector>
 using namespace std;
 
@@ -37,6 +36,7 @@ class MenuItemDAO {
         static int ItemCallback(void* data, int argc, char** argv, char** azColName);
 };
 
+class User;
 class UserDAO {
     public:
         UserDAO(DatabaseManager& db);
