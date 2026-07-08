@@ -12,7 +12,7 @@ class MembershipLevel {
         virtual double GetRatio() const = 0;
         virtual double Discount(double totalBasePrice) const = 0;
         virtual double ShippingCost(double baseShipping, double totalOrderPrice) const = 0;
-        virtual void UpdateState(CustomerUser& customer);
+        virtual void UpdateState(CustomerUser& customer) = 0;
 };
 
 class NormalLevel : public MembershipLevel {
