@@ -1,6 +1,7 @@
 #ifndef USER_H
 #define USER_H
 #include <iostream>
+#include "DAO.h"
 #include "classes.h"
 using namespace std;
 
@@ -87,6 +88,23 @@ class CustomerUser : public User {
     private:
         int points;
         MembershipLevel* Level;
+};
+
+class UserManager {
+    private:
+        vector <User*> allUsers;
+        User* currentUser;
+
+    public:
+        UserManager(const vector <User*>& initialUsers);
+        ~UserManager();
+
+        bool Login(string username, string password);
+        bool Register(string username, string password, Role role, UserDAO& userDAO);
+        void Logout();
+
+        User* GetCurrent() const;
+        bool IsLoggedIn() const;
 };
 
 #endif

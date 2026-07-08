@@ -142,3 +142,60 @@ void CustomerUser::DecreasePoints(double amount) {
     cout << "\n" << amount << " points decreased. Total points: " << points << endl;
     Level->UpdateState(*this);
 }
+
+UserManager::UserManager(const vector <User*>& initialUsers) 
+    : allUsers(initialUsers), currentUser(nullptr) {}
+
+UserManager::~UserManager() {
+    for (User* u : allUsers) {
+        if (u) delete u;
+    }
+    allUsers.clear();
+}
+
+bool UserManager::Login(string username, string password) {
+    for (User* u : allUsers) {
+        if (u->GetName() == username && u->CheckPass(password)) {
+            currentUser = u;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool UserManager::Register(string username, string password, Role role, UserDAO& userDAO) {
+    for (User* u : allUsers) {
+        if (u->GetName() == username) {
+            cout << "\nDuplicate Name!\n";
+            return false; 
+        }
+    }
+
+    int newID = allUsers.size() + 1; // یک ID موقت
+    User* newUser = nullptr;
+    if (role == Customer) newUser = new CustomerUser(newID, username, password, 0);
+    else newUser = new User(newID, username, password, role);
+
+    if (userDAO.Insert(newUser)) {
+        allUsers.push_back(newUser);
+        cout << "\nRegister Successfully Completed!\n";
+        return true;
+    } else {
+        cout << "\nRegister Failed!\n";
+        delete newUser;
+        return false;
+    }
+}
+
+void UserManager::Logout() {
+    currentUser = nullptr;
+    cout << "\nLogging out...\n";
+}
+
+User* UserManager::GetCurrent() const {
+    return currentUser;
+}
+
+bool UserManager::IsLoggedIn() const {
+    return currentUser != nullptr;
+}
