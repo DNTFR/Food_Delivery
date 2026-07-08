@@ -131,11 +131,22 @@ int main() {
         "item_id INTEGER, "
         "quantity INTEGER, "
         "price REAL);";
+    
+    string createUsersTable = R"(
+        CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        role INTEGER NOT NULL,   
+        points INTEGER DEFAULT 0,  
+        restaurant_id INTEGER
+        );)";
 
     db.execute(createOrdersTable);
     db.execute(createOrderItemsTable);
     db.execute(createRestaurantTable);
     db.execute(createMenuTable);
+    db.execute(createUsersTable);
     RestaurantDAO restDAO(db);
     MenuItemDAO itemDAO(db);
 
