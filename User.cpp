@@ -17,7 +17,7 @@ void NormalLevel::UpdateState(CustomerUser& customer) {
         cout << "======================\n";
     }
     else if (pnt >= 100) {
-        customer.ChangeLevel(new GoldLevel);
+        customer.ChangeLevel(new SilverLevel);
         cout << "========================\n";
         cout << "You Are A Silver Member!\n";
         cout << "========================\n";
@@ -39,7 +39,7 @@ void SilverLevel::UpdateState(CustomerUser& customer) {
         cout << "======================\n";
     }
     else if (pnt < 100) {
-        customer.ChangeLevel(new SilverLevel);
+        customer.ChangeLevel(new NormalLevel);
         cout << "========================\n";
         cout << "You Are A Normal Member!\n";
         cout << "========================\n";
@@ -54,14 +54,14 @@ void GoldLevel::UpdateState(CustomerUser& customer) {
         cout << "You Are A VIP Member!\n";
         cout << "=====================\n";
     }
-    else if (pnt < 300) {
-        customer.ChangeLevel(new GoldLevel);
+    else if (pnt >= 100 && pnt < 300) {
+        customer.ChangeLevel(new SilverLevel);
         cout << "========================\n";
         cout << "You Are A Silver Member!\n";
         cout << "========================\n";
     }
     else if (pnt < 100) {
-        customer.ChangeLevel(new SilverLevel);
+        customer.ChangeLevel(new NormalLevel);
         cout << "========================\n";
         cout << "You Are A Normal Member!\n";
         cout << "========================\n";
@@ -70,20 +70,20 @@ void GoldLevel::UpdateState(CustomerUser& customer) {
 
 void VIPLevel::UpdateState(CustomerUser& customer) {
     int pnt = customer.GetPoints();
-    if (pnt < 700) {
-        customer.ChangeLevel(new VIPLevel);
+    if (pnt >= 300 && pnt < 700) {
+        customer.ChangeLevel(new GoldLevel);
         cout << "======================\n";
         cout << "You Are A Gold Member!\n";
         cout << "======================\n";
     }
-    else if (pnt < 300) {
-        customer.ChangeLevel(new GoldLevel);
+    else if (pnt >= 100 && pnt < 300) {
+        customer.ChangeLevel(new SilverLevel);
         cout << "========================\n";
         cout << "You Are A Silver Member!\n";
         cout << "========================\n";
     }
     else if (pnt < 100) {
-        customer.ChangeLevel(new SilverLevel);
+        customer.ChangeLevel(new NormalLevel);
         cout << "========================\n";
         cout << "You Are A Normal Member!\n";
         cout << "========================\n";
