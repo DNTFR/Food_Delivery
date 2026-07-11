@@ -3,6 +3,7 @@
 #include "Database.h"
 #include "Classes.h"
 #include "DAO.h"
+#include "User.h"
 using namespace std;
 
 struct OrderData {
@@ -149,222 +150,58 @@ int main() {
     db.execute(createUsersTable);
     RestaurantDAO restDAO(db);
     MenuItemDAO itemDAO(db);
+    UserDAO userDAO(db);
 
     int choice;
+    vector <User*> AllUsers = userDAO.FindAll();
+    UserManager userManager(AllUsers);
     while(1){
-        system("cls");
-        cout << " =========================\n";
-        cout << " ===== Food Delivery ===== \n";
-        cout << " =========================\n\n";
-        system("color B");
-        cout << " Login as ? \n\n";
-        cout << "   [1] Customer\n\n";
-        cout << "   [2] Manager\n\n";
-        cout << "   [3] Admin\n\n";
-        cout << "   [0] Exit\n\n";
-        cin >> choice;
-        if (choice == 0) {
-            cout << "See You Later\n";
-            break;
-        }  
-        else if (choice == 1) {
-            Cart cart;
-            while(1){    
+        if (!userManager.IsLoggedIn()) {
+            system("cls");
+            system("color B");
+            cout << " =========================\n";
+            cout << " ===== Food Delivery ===== \n";
+            cout << " =========================\n\n";
+            cout << "   [1] Login\n\n";
+            cout << "   [2] Register\n\n";
+            cout << "   [0] Exit\n\n";
+            cin >> choice;
+            if (choice == 0) {
+                cout << "See You Later\n";
+                break;
+            }
+            else if (choice == 1) {
                 system("cls");
-                system("color 9");
-                cout << "--- Customed Dashboard ---\n\n";
-                cout << "  [1] View Restaurants & Menu\n\n";
-                cout << "  [2] Manage Cart\n\n";
-                cout << "  [3] History\n\n";
-                cout << "  [0] Back To Main Menu\n\n";
-                int cuschoice; cin >> cuschoice;
-                if (cuschoice == 0) break;
-                else if (cuschoice == 1) {
-                    cout << "  Available Restaurants:\n\n";
-                    vector <Restaurant> ActiveRests = restDAO.FindActive();
-                    if (ActiveRests.size() == 0) {
-                        cout << "    There is No Active Restaurants!\n";
-                        break;
-                    }
-                    else {
-                        for (int i=0; i<ActiveRests.size(); i++) {
-                            cout << "    [ " << ActiveRests[i].GetID() << " ] " << ActiveRests[i].Getname()
-                                << " (Prepare Time : " << ActiveRests[i].GetPrep() << "mins)\n";
-                        }
-                        cout << endl;
-                        int restChoice;
-                        cout << "  [0] Back to Main Menu\n  Or\n";
-                        cout << "  Enter Restaurant ID : "; cin >> restChoice; cout << endl;
-                        if (restChoice == 0) break;
-                        if (!cart.Empty() && restChoice != cart.GetRestID()) {
-                            cout << "You Have Items From Another Restaurant!\n";
-                            cout << "Please Finalize Your Order Or Clear Cart!\n";
-                            cout << "Press Any Key To Back\n";
-                            getchar(); getchar();
-                            continue;
-                        }
-                        Restaurant* SelectedRest = restDAO.FindById(restChoice);
-                        if (SelectedRest == nullptr) {
-                            cout << "\tInvalid ID!! Try Again!\n";
-                            continue;
-                        }
-                        while (1) {
-                            cout << "===== Menu Of " << SelectedRest->Getname() << " Restaurant ===== \n\n";
-                            vector <Item*> MenuRest = itemDAO.FindByRestaurant(restChoice);
-                            for (int i=0; i<MenuRest.size(); i++){
-                                if (MenuRest[i]->IsActive()) MenuRest[i]->Display();
-                            }
-                            cout << "\n[0] Back To Restaurants\n";
-                            cout << "\n[1] Add Item To Cart\n";
-                            int ordChoice; cin >> ordChoice;
-                            if (ordChoice == 0) break;
-                            else {
-                                cout << "  Enter Item ID To Purchase : "; int q; cin >> q; cout << endl;
-                                cout << "  Enter Count : "; int t; cin >> t; cout << endl;
-                                Item* ChosenItem = itemDAO.FindById(q);
-                                if (t>0 && ChosenItem) {
-                                    cart.AddItem(ChosenItem, t, restChoice);
-                                    cout << "Item Added Successfully\n";
-                                }
-                                else {
-                                    cout << "Adding Item Failed!\n";
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                }
-                else if (cuschoice == 2) {
-                    while(1){
-                        system("cls");
-                        cart.Display();
-                        cout << "\n  [1] Edit Item Count\n\n";
-                        cout << "  [2] Remove Item\n\n";
-                        cout << "  [3] Finalize Order\n\n";
-                        cout << "  [0] Back\n";
-                        int cachoice; cin >> cachoice;
-                        if (cachoice == 0) break;
-                        else if (cachoice == 2) {
-                            if (!cart.Empty()) {
-                                cart.Display();
-                                cout << "[0] Back\nOr\n";
-                                cout << "Enter Item Number To Remove : "; int w; cin >> w;
-                                if (w == 0) break;
-                                else {
-                                    cart.RemoveItem(w);
-                                    continue;
-                                }
-                            }
-                            else {
-                                cout << "There Is Nothing In Your Cart To Remove!\n";
-                                cout << "Press Any Key To Back\n";
-                                getchar(); getchar();
-                                continue;
-                            }
-                        }
-                        else if (cachoice == 1) {
-                            if (!cart.Empty()){
-                                cart.Display();
-                                cout << "[0] Back\n";
-                                cout << "Enter Item Number To Edit : "; int w; cin >> w; cout << endl;
-                                cout << "Enter New Count : "; int e; cin >> e; cout << endl;
-                                if (w == 0) break;
-                                else {
-                                    cart.UpdateCount(w, e);
-                                    continue;   
-                                }
-                            }
-                            else {
-                                cout << "There Is Nothing In Your Cart To Edit\n";
-                                cout << "Press Any Key To Back\n";
-                                getchar(); getchar();
-                                continue;
-                            }
-                        }
-                        else if (cachoice == 3) {
-                            if (!cart.Empty()){
-                                cart.Display();
-                                cout << "\n  Are You Sure You Want To Finalize Your Order ? ([Y] Yes , [N] No) ";
-                                char c; cin >> c;
-                                if (c == 'N') break;
-                                else {
-                                    int tarRestID = cart.GetRestID();
-                                    double finPrice = cart.GetPrice();
-                                    string insertOrderSql = "INSERT INTO orders (restaurant_id, total_price, status) VALUES (" 
-                                                        + to_string(tarRestID) + ", " 
-                                                        + to_string(finPrice) + ", 'Pending');";
-                                    if (!db.execute(insertOrderSql)) {
-                                        cout << "\nCreating Order Failed!\n";
-                                        break;
-                                    }
-                                    int lastOrderId = 0;
-                                    db.query("SELECT last_insert_rowid();", LastIdCallback, &lastOrderId);
-                                    bool itemsSavedSuccessfully = true;
-                                    auto cartItems = cart.GetItems();
-                                    for (size_t i = 0; i < cartItems.size(); i++) {
-                                        Item* item = cartItems[i].first;
-                                        int qty = cartItems[i].second;
-                                        double unitPrice = item->GetPrice();
-                                        string insertItemSql = "INSERT INTO order_items (order_id, item_id, quantity, price) VALUES ("
-                                                            + to_string(lastOrderId) + ", "
-                                                            + to_string(item->GetID()) + ", "
-                                                            + to_string(qty) + ", "
-                                                            + to_string(unitPrice) + ");";
-                                        if (!db.execute(insertItemSql)) itemsSavedSuccessfully = false;
-                                    }
-                                    if (itemsSavedSuccessfully) {
-                                        cout << "\nOrder #" << lastOrderId << " Placed Successfully!\n";
-                                        cart.Clear();
-                                    } else cout << "\nSaving Items To Cart Failed!\n";
-                                    getchar(); getchar(); break;
-                                }
-                            }
-                        }   
-                    }
-                }
-                else if (cuschoice == 3) {
-                    system("cls");
-                    cout << "--- ALL PREVIOUS ORDERS ---\n\n";
-                    vector <OrderData> allOrders;
-                    string queryAllOrdersSql = "SELECT id, restaurant_id, total_price, status FROM orders ORDER BY id DESC;";
-                    db.query(queryAllOrdersSql, FetchAllOrdersCallback, &allOrders);
-                    if (allOrders.empty()) cout << "  You Haven't Placed Any Orders Yet!\n";
-                    else {
-                        for (size_t i = 0; i < allOrders.size(); i++) {
-                            cout << " | ORDER #" << allOrders[i].id 
-                                 << " | Restaurant ID: " << allOrders[i].restaurantId
-                                 << " | Status: [" << allOrders[i].status << "]\n"
-                                 << " (Item Name , Qty , Price , Total)\n\n";
-                            vector <OrderItemInfo> details;
-                            string queryDetailsSql = "SELECT item_id, quantity, price FROM order_items WHERE order_id = " 
-                                                     + to_string(allOrders[i].id) + ";";
-                            db.query(queryDetailsSql, OrderDetailsCallback, &details);
-                            if (details.empty()) cout << "No item details found for this order.\n";
-                            else {
-                                for (size_t j = 0; j < details.size(); j++) {
-                                    Item* foodItem = itemDAO.FindById(details[j].itemId);
-                                    cout << "[ " << j+1 << " ] ";
-                                    if (foodItem) {
-                                        double rowTotal = details[j].quantity * details[j].price;
-                                        cout << foodItem->Getname() << " , " << details[j].quantity << " , "
-                                        << details[j].price << "T , "
-                                        << rowTotal << " Toman\n";
-
-                                        delete foodItem; 
-                                    } else {
-                                        cout << "Unknown ID\n";
-                                    }
-                                }
-                            }
-                            cout << "\n--- Total Bill For This Order : " << allOrders[i].totalPrice << " Toman ---\n\n";
-                        }
-                    }
-                    cout << "Press any key to Back\n";
-                    getchar(); getchar();
-                }
+                string username, password;
+                cout << "\n===== LOGIN =====\n";
+                cout << "    Username: "; cin >> username;
+                cout << "\n    Password: "; cin >> password;
+                if (userManager.Login(username, password)) cout << "\nLogin Successful! Welcome " << username << ".\n";
+                else cout << "\nInvalid Username or Password!\n";
+                cout << "Press Any Key To Continue..."; getchar(); getchar();
+            }
+            else if (choice == 2) {
+                string username, password;
+                Role role; int x;
+                cout << "\n===== REGISTER =====\n";
+                cout << "    Choose a Username: "; cin >> username;
+                cout << "\n    Choose a Password: "; cin >> password;
+                cout << "\n    Choose a Role ([1] Customer , [2] Manager , [3] Admin]) : "; cin >> x;
+                if (x == 1) role = Customer;
+                if (x == 2) role = Manager;
+                if (x == 3) role = Admin;
+                if (userManager.Register(username, password, role, userDAO)) {}
+                cout << "Press Any Key To Continue..."; getchar(); getchar();
+            }
+            else {
+                cout << "\nInvalid Choice!\n";
+                cout << "Press Any Key To Continue..."; getchar(); getchar();
             }
         }
-        else if (choice == 2) {
+        else {
+            break;
+        }
+        /*else if (choice == 2) {
             while(1) {
                 system("cls");
                 system("color 5");
@@ -664,5 +501,5 @@ int main() {
                 }
             }
         }
-    }
+    }*/
 }

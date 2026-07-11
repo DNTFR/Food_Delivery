@@ -173,7 +173,7 @@ bool UserManager::Register(string username, string password, Role role, UserDAO&
         }
     }
 
-    int newID = allUsers.size() + 1; // یک ID موقت
+    int newID = allUsers.size() + 1;
     User* newUser = nullptr;
     if (role == Customer) newUser = new CustomerUser(newID, username, password, 0);
     else newUser = new User(newID, username, password, role);
