@@ -212,6 +212,7 @@ int main() {
                         system("cls");
                         system("color 9");
                         cout << "--- Customed Dashboard ---\n\n";
+                        cout << "  [ " << activeCustomer->GetName() << " , " << activeCustomer->GetLevelName() << " , " << activeCustomer->GetPoints() << " ]\n\n";
                         cout << "  [1] View Restaurants & Menu\n\n";
                         cout << "  [2] Manage Cart\n\n";
                         cout << "  [3] History\n\n";
@@ -366,6 +367,8 @@ int main() {
                                             }
                                             if (itemsSavedSuccessfully) {
                                                 cout << "\nOrder #" << lastOrderId << " Placed Successfully!\n";
+                                                activeCustomer->AddPoints(fin);
+                                                userDAO.UpdatePoints(activeCustomer->GetID(), activeCustomer->GetPoints());
                                                 cart.Clear();
                                             } else cout << "\nSaving Items To Cart Failed!\n";
                                             getchar(); getchar(); break;
