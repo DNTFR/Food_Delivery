@@ -206,8 +206,10 @@ int main() {
             while (isIn) {
                 system("cls");
                 if (currentRole == Customer) {
+                    CustomerUser* activeCustomer = dynamic_cast<CustomerUser*>(activeUser);
                     Cart cart;
                     while(1){    
+                        system("cls");
                         system("color 9");
                         cout << "--- Customed Dashboard ---\n\n";
                         cout << "  [1] View Restaurants & Menu\n\n";
@@ -218,8 +220,8 @@ int main() {
                         if (cuschoice == 0) {
                             userManager.Logout();
                             isIn = false;
-                            break;
                             cout << "Press Any Key To Continue..."; getchar(); getchar();
+                            break;
                         }
                         else if (cuschoice == 1) {
                             cout << "  Available Restaurants:\n\n";
@@ -326,15 +328,23 @@ int main() {
                                 else if (cachoice == 3) {
                                     if (!cart.Empty()){
                                         cart.Display();
+
+                                        cout << "\n===== Loyalty System ===== \n\n";
+                                        cout << "Total : " << cart.GetPrice() << endl;
+                                        cout << "Discount ( " << activeCustomer->GetLevelName() << " ) : " << activeCustomer->GetDiscount(cart.GetPrice()) << endl;
+                                        cout << "Shipping : " << activeCustomer->GetShipping(1000, cart.GetPrice()) << endl;
+                                        cout << "====================\n";
+                                        double fin = cart.GetPrice() - activeCustomer->GetDiscount(cart.GetPrice()) + activeCustomer->GetShipping(1000, cart.GetPrice());
+                                        cout << "Final Cost : " << fin << endl;
+
                                         cout << "\n  Are You Sure You Want To Finalize Your Order ? ([Y] Yes , [N] No) ";
                                         char c; cin >> c;
                                         if (c == 'N') break;
                                         else {
                                             int tarRestID = cart.GetRestID();
-                                            double finPrice = cart.GetPrice();
                                             string insertOrderSql = "INSERT INTO orders (restaurant_id, total_price, status) VALUES (" 
                                                                 + to_string(tarRestID) + ", " 
-                                                                + to_string(finPrice) + ", 'Pending');";
+                                                                + to_string(fin) + ", 'Pending');";
                                             if (!db.execute(insertOrderSql)) {
                                                 cout << "\nCreating Order Failed!\n";
                                                 break;
