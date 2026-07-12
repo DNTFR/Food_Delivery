@@ -199,7 +199,30 @@ int main() {
             }
         }
         else {
-            break;
+            User* activeUser = userManager.GetCurrent();
+            Role currentRole = activeUser->GetRole();
+            bool isIn = true;
+
+            while (isIn) {
+                system("cls");
+                if (currentRole == Customer) {
+
+                }
+                else if (currentRole == Manager) {
+
+                }
+                else if (currentRole == Admin) {
+
+                }
+                cout << "    [0] Logout\n\n";
+                cout << "  Choose an Option: ";
+                int dashChoice; cin >> dashChoice;
+                if (dashChoice == 0) {
+                    userManager.Logout();
+                    isIn = false;
+                    cout << "Press Any Key To Continue..."; getchar(); getchar();
+                }
+            }
         }
         /*else if (choice == 2) {
             while(1) {
