@@ -132,7 +132,7 @@ double CustomerUser::GetDiscount(double price) { return Level->Discount(price); 
 double CustomerUser::GetShipping(double baseShipping, double price) { return Level->ShippingCost(baseShipping, price); }
 
 void CustomerUser::AddPoints(double orderPrice) {
-    int earned = static_cast<int>(orderPrice * 0.0001 * Level->GetRatio());
+    int earned = static_cast<int>(orderPrice / 20 * Level->GetRatio());
     points += earned;
     cout << "\nYou earned " << earned << " points! Total points : " << points << endl;
     Level->UpdateState(*this); 
