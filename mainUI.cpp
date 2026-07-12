@@ -9,6 +9,7 @@ using namespace std;
 struct OrderData {
     int id;
     int restaurantId;
+    int userId;
     double totalPrice;
     string status;
 };
@@ -31,14 +32,25 @@ int LastIdCallback(void* data, int argc, char** argv, char** azColName) {
     return 0;
 }
 
+bool GetOrderById(int orderId, OrderData& order, DatabaseManager& db) {
+    string sql = "SELECT id, user_id, restaurant_id, total_price, status FROM orders WHERE id = " + to_string(orderId) + ";";
+    vector<OrderData> results;
+    if (db.query(sql, FetchAllOrdersCallback, &results) && !results.empty()) {
+        order = results[0];
+        return true;
+    }
+    return false;
+}
+
 int FetchAllOrdersCallback(void* data, int argc, char** argv, char** azColName) {
     auto* ordersList = static_cast<vector<OrderData>*>(data);
-    if (argc >= 4 && argv[0] && argv[1] && argv[2] && argv[3]) {
+    if (argc >= 5 && argv[0] && argv[1] && argv[2] && argv[3] && argv[4]) {
         OrderData order;
         order.id = atoi(argv[0]);
-        order.restaurantId = atoi(argv[1]);
-        order.totalPrice = atof(argv[2]);
-        order.status = argv[3];
+        order.userId = atoi(argv[1]);   
+        order.restaurantId = atoi(argv[2]);
+        order.totalPrice = atof(argv[3]);
+        order.status = argv[4];
         ordersList->push_back(order);
     }
     return 0;
@@ -142,7 +154,8 @@ int main() {
         points INTEGER DEFAULT 0,  
         restaurant_id INTEGER
         );)";
-
+string sql = "ALTER TABLE orders ADD COLUMN user_id INTEGER DEFAULT 0;";
+db.execute(sql);
     db.execute(createOrdersTable);
     db.execute(createOrderItemsTable);
     db.execute(createRestaurantTable);
@@ -578,7 +591,7 @@ int main() {
                                         system("cls");
                                         cout << "--- RECEIVED ORDERS FOR : " << SelectedRest->Getname() << "\n";
                                         vector <OrderData> restOrders;
-                                        string queryRestOrdersSql = "SELECT id, restaurant_id, total_price, status FROM orders WHERE restaurant_id = " 
+                                        string queryRestOrdersSql = "SELECT id, user_id, restaurant_id, total_price, status FROM orders WHERE restaurant_id = " 
                                                                 + to_string(ManageChoice) + " ORDER BY id DESC;";
                                         db.query(queryRestOrdersSql, FetchRestaurantOrdersCallback, &restOrders);
                                         if (restOrders.empty()) {
@@ -634,11 +647,34 @@ int main() {
                                             cout << "    [1] Preparing \n\n";
                                             cout << "    [2] Ready for Delivery \n\n";
                                             cout << "    [3] Delivered\n\n";
+                                            cout << "    [4] Cancelled\n\n";
                                             int statchoice; cin >> statchoice;
                                             string newStatus = "Pending";
                                             if (statchoice == 1) newStatus = "Preparing";
                                             else if (statchoice == 2) newStatus = "Ready For Delivery";
                                             else if (statchoice == 3) newStatus = "Delivered";
+                                            else if (statchoice == 4) {
+                                                OrderData order;
+                                                if (GetOrderById(ordID, order, db)) {
+                                                    if (order.status != "Cancelled") {
+                                                        string newStatus = "Cancelled";
+                                                        CustomerUser* customer = dynamic_cast<CustomerUser*>(userManager.GetUserByID(order.userId));
+                                                        if (customer) {
+                                                            customer->DecreasePoints(order.totalPrice);
+                                                            userDAO.UpdatePoints(customer->GetID(), customer->GetPoints());  
+                                                            string updateSql = "UPDATE orders SET status = 'Cancelled' WHERE id = " + to_string(ordID) + ";";
+                                                            db.execute(updateSql);
+                                                            cout << "\n✅ Order cancelled and points deducted successfully!" << endl;
+                                                        }
+                                                    }
+                                                } else {
+                                                    cout << "\n Order not found!" << endl;
+                                                }
+                                                newStatus = "Cancelled";
+                                                CustomerUser* customer = dynamic_cast<CustomerUser*>(userManager.GetUserByID(order.userId));
+                                                customer->DecreasePoints(order.totalPrice);
+                                                userDAO.UpdatePoints(customer->GetID(), customer->GetPoints());
+                                            }
                                             string updateSql = "UPDATE orders SET status = '" + newStatus + "' WHERE id = " + to_string(ordID) + ";";
                                             if (db.execute(updateSql)) {
                                                 cout << "\nOrder #" << ordID << " status updated to [" << newStatus << "].\n";

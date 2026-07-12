@@ -98,7 +98,8 @@ class UserManager {
     public:
         UserManager(const vector <User*>& initialUsers);
         ~UserManager();
-
+        
+        User* GetUserByID(int id);
         bool Login(string username, string password);
         bool Register(string username, string password, Role role, UserDAO& userDAO);
         void Logout();

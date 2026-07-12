@@ -155,6 +155,15 @@ UserManager::~UserManager() {
     allUsers.clear();
 }
 
+User* UserManager::GetUserByID(int id) {
+    for (User* u : allUsers) {
+        if (u->GetID() == id) {
+            return u;
+        }
+    }
+    return nullptr;
+}
+
 bool UserManager::Login(string username, string password) {
     for (User* u : allUsers) {
         if (u->GetName() == username && u->CheckPass(password)) {
