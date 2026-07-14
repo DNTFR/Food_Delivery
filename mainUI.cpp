@@ -32,16 +32,6 @@ int LastIdCallback(void* data, int argc, char** argv, char** azColName) {
     return 0;
 }
 
-bool GetOrderById(int orderId, OrderData& order, DatabaseManager& db) {
-    string sql = "SELECT id, user_id, restaurant_id, total_price, status FROM orders WHERE id = " + to_string(orderId) + ";";
-    vector<OrderData> results;
-    if (db.query(sql, FetchAllOrdersCallback, &results) && !results.empty()) {
-        order = results[0];
-        return true;
-    }
-    return false;
-}
-
 int FetchAllOrdersCallback(void* data, int argc, char** argv, char** azColName) {
     auto* ordersList = static_cast<vector<OrderData>*>(data);
     if (argc >= 5 && argv[0] && argv[1] && argv[2] && argv[3] && argv[4]) {
@@ -54,6 +44,16 @@ int FetchAllOrdersCallback(void* data, int argc, char** argv, char** azColName) 
         ordersList->push_back(order);
     }
     return 0;
+}
+
+bool GetOrderById(int orderId, OrderData& order, DatabaseManager& db) {
+    string sql = "SELECT id, user_id, restaurant_id, total_price, status FROM orders WHERE id = " + to_string(orderId) + ";";
+    vector<OrderData> results;
+    if (db.query(sql, FetchAllOrdersCallback, &results) && !results.empty()) {
+        order = results[0];
+        return true;
+    }
+    return false;
 }
 
 int OrderDetailsCallback(void* data, int argc, char** argv, char** azColName) {
@@ -154,8 +154,17 @@ int main() {
         points INTEGER DEFAULT 0,  
         restaurant_id INTEGER
         );)";
-string sql = "ALTER TABLE orders ADD COLUMN user_id INTEGER DEFAULT 0;";
-db.execute(sql);
+
+    string createCouponsTable = 
+        "CREATE TABLE IF NOT EXISTS coupons ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "code TEXT UNIQUE, "
+        "discount_percent REAL, "
+        "is_active INTEGER DEFAULT 1);";
+
+    string sql = "ALTER TABLE orders ADD COLUMN user_id INTEGER DEFAULT 0;";
+    db.execute(createCouponsTable);
+    db.execute(sql);
     db.execute(createOrdersTable);
     db.execute(createOrderItemsTable);
     db.execute(createRestaurantTable);
@@ -349,6 +358,19 @@ db.execute(sql);
                                         cout << "Shipping : " << activeCustomer->GetShipping(1000, cart.GetPrice()) << endl;
                                         cout << "====================\n";
                                         double fin = cart.GetPrice() - activeCustomer->GetDiscount(cart.GetPrice()) + activeCustomer->GetShipping(1000, cart.GetPrice());
+                                        cout << "Do You Have Discount Coupon? (Y/N) "; char co; cin >> co;
+                                        if (co == 'Y') {
+                                            cout << "Enter Code : "; string cc; cin >> cc;
+                                            double dp = 0;
+                                            string couponSql = "SELECT discount_percent FROM coupons WHERE code = '" + cc + "' AND is_active = 1;";
+                                            db.query(couponSql, SingleValueCallback, &dp);
+                                            if (dp > 0) {
+                                                double disc = fin * (dp / 100.0);
+                                                fin -= disc;
+                                                cout << "Coupon Applied!\n";
+                                            }
+                                            else cout << "Invaild Coupon!\n";
+                                        }
                                         cout << "Final Cost : " << fin << endl;
 
                                         cout << "\n  Are You Sure You Want To Finalize Your Order ? ([Y] Yes , [N] No) ";
@@ -356,9 +378,10 @@ db.execute(sql);
                                         if (c == 'N') break;
                                         else {
                                             int tarRestID = cart.GetRestID();
-                                            string insertOrderSql = "INSERT INTO orders (restaurant_id, total_price, status) VALUES (" 
-                                                                + to_string(tarRestID) + ", " 
-                                                                + to_string(fin) + ", 'Pending');";
+                                            string insertOrderSql = "INSERT INTO orders (user_id, restaurant_id, total_price, status) VALUES (" 
+                                                + to_string(activeCustomer->GetID()) + ", "
+                                                + to_string(tarRestID) + ", " 
+                                                + to_string(fin) + ", 'Pending');";
                                             if (!db.execute(insertOrderSql)) {
                                                 cout << "\nCreating Order Failed!\n";
                                                 break;
@@ -699,6 +722,7 @@ db.execute(sql);
                         cout << "    [1] Add Restaurant\n\n";
                         cout << "    [2] Remove Restaurant\n\n";
                         cout << "    [3] Reports\n\n";
+                        cout << "    [4] Create Discount Coupon\n\n";
                         cout << "    [0] Logout\n\n";
                         int achoice; cin >> achoice;
                         if (achoice == 0) {
@@ -762,6 +786,16 @@ db.execute(sql);
                             cout << "\nPress any key to Back!\n";
                             cin.ignore();
                             cin.get();
+                        }
+                        else if (achoice == 4) {
+                            cout << "--- Discount Coupon ---\n";
+                            cout << "Enter Coupon Code: "; string cp; cin >> cp;
+                            cout << "\nEnter Discount Percentage: "; double pc; cin >> pc;
+                            string insertCouponSql = "INSERT INTO coupons (code, discount_percent, is_active) VALUES ('" 
+                                                     + cp + "', " + to_string(pc) + ", 1);";
+                            if (db.execute(insertCouponSql)) cout << "\nCoupon '" << cp << "' created successfully!\n";
+                            else cout << "\nFailed to create coupon!\n";
+                            cout << "Press Any Key To Back...\n"; getchar(); getchar();
                         }
                     }
                 }
