@@ -233,7 +233,7 @@ int main() {
                     while(1){    
                         system("cls");
                         system("color 9");
-                        cout << "--- Customed Dashboard ---\n\n";
+                        cout << "--- Customer Dashboard ---\n\n";
                         cout << "  [ " << activeCustomer->GetName() << " , " << activeCustomer->GetLevelName() << " , " << activeCustomer->GetPoints() << " ]\n\n";
                         cout << "  [1] View Restaurants & Menu\n\n";
                         cout << "  [2] Manage Cart\n\n";
@@ -417,7 +417,8 @@ int main() {
                             system("cls");
                             cout << "--- ALL PREVIOUS ORDERS ---\n\n";
                             vector <OrderData> allOrders;
-                            string queryAllOrdersSql = "SELECT id, restaurant_id, total_price, status FROM orders ORDER BY id DESC;";
+                            string queryAllOrdersSql = "SELECT id, restaurant_id, total_price, status FROM orders WHERE user_id = " 
+                                + to_string(activeCustomer->GetID()) + " ORDER BY id DESC;";
                             db.query(queryAllOrdersSql, FetchAllOrdersCallback, &allOrders);
                             if (allOrders.empty()) cout << "  You Haven't Placed Any Orders Yet!\n";
                             else {
