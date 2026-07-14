@@ -723,6 +723,7 @@ int main() {
                         cout << "    [2] Remove Restaurant\n\n";
                         cout << "    [3] Reports\n\n";
                         cout << "    [4] Create Discount Coupon\n\n";
+                        cout << "    [5] Edit Points\n\n";
                         cout << "    [0] Logout\n\n";
                         int achoice; cin >> achoice;
                         if (achoice == 0) {
@@ -811,6 +812,18 @@ int main() {
                             if (db.execute(insertCouponSql)) cout << "\nCoupon '" << cp << "' created successfully!\n";
                             else cout << "\nFailed to create coupon!\n";
                             cout << "Press Any Key To Back...\n"; getchar(); getchar();
+                        }
+                        else if (achoice == 5) {
+                            vector <User*> allUsers = userDAO.FindAll();
+                            for(User* u : allUsers) {
+                                if(u->GetRole() == Customer)
+                                    cout << "- " << u->GetName() << " (ID: " << u->GetID() << ")\n";
+                            }
+                            cout << "\nEnter User ID to modify points: "; int id; cin >> id;
+                            cout << "Enter new points: "; int P; cin >> P;
+                            userDAO.UpdatePoints(id, P);
+                            cout << "Points updated successfully!\n";
+                            cin.ignore(); cin.get();
                         }
                     }
                 }
