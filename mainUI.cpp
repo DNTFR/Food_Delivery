@@ -783,6 +783,21 @@ int main() {
                                     if(r) delete r;
                                 }
                             }
+                            cout << "\n\n";
+                            cout << "--- User Statistics ---\n";
+                            vector<User*> allUsers = userDAO.FindAll();
+                            int normal = 0, silver = 0, gold = 0, vip = 0;
+                            for (User* u : allUsers) {
+                                if (CustomerUser* c = dynamic_cast<CustomerUser*>(u)) {
+                                    string lvl = c->GetLevelName();
+                                    if (lvl == "Normal") normal++;
+                                    else if (lvl == "Silver") silver++;
+                                    else if (lvl == "Gold") gold++;
+                                    else if (lvl == "VIP") vip++;
+                                }
+                            }
+                            cout << "Normal: " << normal << "\nSilver: " << silver 
+                                 << "\nGold: " << gold << "\nVIP: " << vip << endl;
                             cout << "\nPress any key to Back!\n";
                             cin.ignore();
                             cin.get();
