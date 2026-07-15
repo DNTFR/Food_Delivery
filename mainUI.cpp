@@ -99,6 +99,16 @@ int ActivityReportCallback(void* data, int argc, char** argv, char** azColName) 
     return 0;
 }
 
+int FetchLogsCallback(void* data, int argc, char** argv, char** azColName) {
+    if (argc >= 5) {
+        cout << "  [Log ID: " << argv[0] << "] User ID: " << argv[1] 
+             << " | Changed from: [" << (argv[2] ? argv[2] : "None") << "]"
+             << " -> To: [" << (argv[3] ? argv[3] : "None") << "]"
+             << " | Date: " << (argv[4] ? argv[4] : "Unknown") << "\n";
+    }
+    return 0;
+}
+
 int main() {
     DatabaseManager db;
     if (!db.open("food_delivery.db")) {
@@ -162,6 +172,15 @@ int main() {
         "discount_percent REAL, "
         "is_active INTEGER DEFAULT 1);";
 
+    string createLogsTable = 
+        "CREATE TABLE IF NOT EXISTS user_level_logs ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "user_id INTEGER, "
+        "old_level TEXT, "
+        "new_level TEXT, "
+        "change_date DATETIME DEFAULT CURRENT_TIMESTAMP);";
+        
+    db.execute(createLogsTable);
     string sql = "ALTER TABLE orders ADD COLUMN user_id INTEGER DEFAULT 0;";
     db.execute(createCouponsTable);
     db.execute(sql);
@@ -403,8 +422,15 @@ int main() {
                                             }
                                             if (itemsSavedSuccessfully) {
                                                 cout << "\nOrder #" << lastOrderId << " Placed Successfully!\n";
+                                                string olddLevel = activeCustomer->GetLevelName();
                                                 activeCustomer->AddPoints(fin);
-                                                userDAO.UpdatePoints(activeCustomer->GetID(), activeCustomer->GetPoints());
+                                                userDAO.UpdatePoints(activeCustomer->GetID(), activeCustomer->GetPoints());                                                string oldLevel = activeCustomer->GetLevelName();
+                                                string newLevel = activeCustomer->GetLevelName();
+                                                if (olddLevel != newLevel) { 
+                                                    string logInsert = "INSERT INTO user_level_logs (user_id, old_level, new_level) VALUES (" 
+                                                                    + to_string(activeCustomer->GetID()) + ", '" + olddLevel + "', '" + newLevel + "');";
+                                                    db.execute(logInsert);
+                                                }
                                                 cart.Clear();
                                             } else cout << "\nSaving Items To Cart Failed!\n";
                                             getchar(); getchar(); break;
@@ -684,20 +710,24 @@ int main() {
                                                         string newStatus = "Cancelled";
                                                         CustomerUser* customer = dynamic_cast<CustomerUser*>(userManager.GetUserByID(order.userId));
                                                         if (customer) {
+                                                            string oldddLevel = customer->GetLevelName();
                                                             customer->DecreasePoints(order.totalPrice);
-                                                            userDAO.UpdatePoints(customer->GetID(), customer->GetPoints());  
+                                                            userDAO.UpdatePoints(customer->GetID(), customer->GetPoints());
+                                                            
                                                             string updateSql = "UPDATE orders SET status = 'Cancelled' WHERE id = " + to_string(ordID) + ";";
                                                             db.execute(updateSql);
-                                                            cout << "\n✅ Order cancelled and points deducted successfully!" << endl;
+                                                            cout << "\n✅ Order cancelled and points deducted successfully!" << endl;  
+                                                            string newLevel = customer->GetLevelName();
+                                                            if (oldddLevel != newLevel) {
+                                                                string logInsert = "INSERT INTO user_level_logs (user_id, old_level, new_level) VALUES (" 
+                                                                                + to_string(customer->GetID()) + ", '" + oldddLevel + "', '" + newLevel + "');";
+                                                                db.execute(logInsert);
+                                                            }
                                                         }
                                                     }
                                                 } else {
                                                     cout << "\n Order not found!" << endl;
                                                 }
-                                                newStatus = "Cancelled";
-                                                CustomerUser* customer = dynamic_cast<CustomerUser*>(userManager.GetUserByID(order.userId));
-                                                customer->DecreasePoints(order.totalPrice);
-                                                userDAO.UpdatePoints(customer->GetID(), customer->GetPoints());
                                             }
                                             string updateSql = "UPDATE orders SET status = '" + newStatus + "' WHERE id = " + to_string(ordID) + ";";
                                             if (db.execute(updateSql)) {
@@ -725,6 +755,7 @@ int main() {
                         cout << "    [3] Reports\n\n";
                         cout << "    [4] Create Discount Coupon\n\n";
                         cout << "    [5] Edit Points\n\n";
+                        cout << "    [6] View User Level History\n\n";
                         cout << "    [0] Logout\n\n";
                         int achoice; cin >> achoice;
                         if (achoice == 0) {
@@ -827,14 +858,32 @@ int main() {
                                 CustomerUser* cu = dynamic_cast<CustomerUser*>(activeMemUser);
                                 if (cu) {
                                     int currentPoints = cu->GetPoints();
+                                    string oldLevel = cu->GetLevelName();
                                     if (P > currentPoints) cu->AddPoints(P - currentPoints);
                                     else if (P < currentPoints) cu->DecreasePoints(currentPoints - P);
-
+                                    string newLevel = cu->GetLevelName();
+                                    if (oldLevel != newLevel) {
+                                        string logInsert = "INSERT INTO user_level_logs (user_id, old_level, new_level) VALUES (" 
+                                                        + to_string(id) + ", '" + oldLevel + "', '" + newLevel + "');";
+                                        db.execute(logInsert);
+                                    }
                                     if (userDAO.UpdatePoints(id, cu->GetPoints())) cout << "\nPoints and Level updated successfully!\n";
                                     else cout << "\nFailed to update points in Database!\n";
                                 }
                             } else cout << "\nUser ID not found or is not a Customer!\n";
                             cout << "Points updated successfully!\n";
+                            cout << "Press Any Key To Back...\n";
+                            cin.ignore(); cin.get();
+                        }
+                        else if (achoice == 6) {
+                            cout << "--- User Level History ---\n";
+                            string logSql = "SELECT id, user_id, old_level, new_level, change_date FROM user_level_logs ORDER BY id DESC;";
+                            double countLogs = 0;
+                            db.query("SELECT COUNT(*) FROM user_level_logs;", SingleValueCallback, &countLogs);
+                            
+                            if (countLogs == 0) cout << "  No level change history found yet!\n";
+                            else db.query(logSql, FetchLogsCallback, nullptr);
+                            cout << "\nPress Any Key To Back...\n"; 
                             cin.ignore(); cin.get();
                         }
                     }
