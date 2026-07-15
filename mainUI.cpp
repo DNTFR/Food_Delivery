@@ -34,13 +34,13 @@ int LastIdCallback(void* data, int argc, char** argv, char** azColName) {
 
 int FetchAllOrdersCallback(void* data, int argc, char** argv, char** azColName) {
     auto* ordersList = static_cast<vector<OrderData>*>(data);
-    if (argc >= 5 && argv[0] && argv[1] && argv[2] && argv[3] && argv[4]) {
+    if (argc >= 5) {
         OrderData order;
-        order.id = atoi(argv[0]);
-        order.userId = atoi(argv[1]);   
-        order.restaurantId = atoi(argv[2]);
-        order.totalPrice = atof(argv[3]);
-        order.status = argv[4];
+        order.id = atoi(argv[0] ? argv[0] : "0");
+        order.userId = atoi(argv[1] ? argv[1] : "0");
+        order.restaurantId = atoi(argv[2] ? argv[2] : "0");
+        order.totalPrice = atof(argv[3] ? argv[3] : "0.0");
+        order.status = argv[4] ? argv[4] : "Pending";
         ordersList->push_back(order);
     }
     return 0;
@@ -70,12 +70,13 @@ int OrderDetailsCallback(void* data, int argc, char** argv, char** azColName) {
 
 int FetchRestaurantOrdersCallback(void* data, int argc, char** argv, char** azColName) {
     auto* ordersList = static_cast<vector<OrderData>*>(data);
-    if (argc >= 4 && argv[0] && argv[1] && argv[2] && argv[3]) {
+    if (argc >= 5 && argv[0] && argv[1] && argv[2] && argv[3] && argv[4]) {
         OrderData order;
-        order.id = atoi(argv[0]);
-        order.restaurantId = atoi(argv[1]);
-        order.totalPrice = atof(argv[2]);
-        order.status = argv[3];
+        order.id = atoi(argv[0]);         
+        order.userId = atoi(argv[1]);     
+        order.restaurantId = atoi(argv[2]); 
+        order.totalPrice = atof(argv[3]);  
+        order.status = argv[4];            
         ordersList->push_back(order);
     }
     return 0;
@@ -443,7 +444,7 @@ int main() {
                             system("cls");
                             cout << "--- ALL PREVIOUS ORDERS ---\n\n";
                             vector <OrderData> allOrders;
-                            string queryAllOrdersSql = "SELECT id, restaurant_id, total_price, status FROM orders WHERE user_id = " 
+                            string queryAllOrdersSql = "SELECT id, user_id, restaurant_id, total_price, status FROM orders WHERE user_id = " 
                                 + to_string(activeCustomer->GetID()) + " ORDER BY id DESC;";
                             db.query(queryAllOrdersSql, FetchAllOrdersCallback, &allOrders);
                             if (allOrders.empty()) cout << "  You Haven't Placed Any Orders Yet!\n";
@@ -850,28 +851,33 @@ int main() {
                             for (User* u : allUsers) {
                                 if(u->GetRole() == Customer)
                                     cout << "- " << u->GetName() << " (ID: " << u->GetID() << ")\n";
+                                    delete u;
                             }
                             cout << "\nEnter User ID to modify points: "; int id; cin >> id;
                             cout << "Enter new points: "; int P; cin >> P;
                             User* activeMemUser = userManager.GetUserByID(id);
                             if (activeMemUser && activeMemUser->GetRole() == Customer) {
                                 CustomerUser* cu = dynamic_cast<CustomerUser*>(activeMemUser);
-                                if (cu) {
-                                    int currentPoints = cu->GetPoints();
-                                    string oldLevel = cu->GetLevelName();
-                                    if (P > currentPoints) cu->AddPoints(P - currentPoints);
-                                    else if (P < currentPoints) cu->DecreasePoints(currentPoints - P);
-                                    string newLevel = cu->GetLevelName();
+                                string oldLevel = cu->GetLevelName();
+                                int cupo = cu->GetPoints();
+                                if (P > cu->GetPoints()) cu->AddPoints(P - cupo);
+                                else cu->DecreasePoints(cupo - P);
+                                string newLevel = cu->GetLevelName();
+
+                                if (userDAO.UpdatePoints(id, P)) {
+                                    cout << "\nPoints and Level updated successfully!\n";
+                                    
                                     if (oldLevel != newLevel) {
                                         string logInsert = "INSERT INTO user_level_logs (user_id, old_level, new_level) VALUES (" 
                                                         + to_string(id) + ", '" + oldLevel + "', '" + newLevel + "');";
                                         db.execute(logInsert);
                                     }
-                                    if (userDAO.UpdatePoints(id, cu->GetPoints())) cout << "\nPoints and Level updated successfully!\n";
-                                    else cout << "\nFailed to update points in Database!\n";
+                                } else {
+                                    cout << "\nFailed to update points in Database!\n";
                                 }
-                            } else cout << "\nUser ID not found or is not a Customer!\n";
-                            cout << "Points updated successfully!\n";
+                            } else {
+                                cout << "\nUser ID not found or is not a Customer!\n";
+                            }
                             cout << "Press Any Key To Back...\n";
                             cin.ignore(); cin.get();
                         }
