@@ -816,13 +816,24 @@ int main() {
                         }
                         else if (achoice == 5) {
                             vector <User*> allUsers = userDAO.FindAll();
-                            for(User* u : allUsers) {
+                            for (User* u : allUsers) {
                                 if(u->GetRole() == Customer)
                                     cout << "- " << u->GetName() << " (ID: " << u->GetID() << ")\n";
                             }
                             cout << "\nEnter User ID to modify points: "; int id; cin >> id;
                             cout << "Enter new points: "; int P; cin >> P;
-                            userDAO.UpdatePoints(id, P);
+                            User* activeMemUser = userManager.GetUserByID(id);
+                            if (activeMemUser && activeMemUser->GetRole() == Customer) {
+                                CustomerUser* cu = dynamic_cast<CustomerUser*>(activeMemUser);
+                                if (cu) {
+                                    int currentPoints = cu->GetPoints();
+                                    if (P > currentPoints) cu->AddPoints(P - currentPoints);
+                                    else if (P < currentPoints) cu->DecreasePoints(currentPoints - P);
+
+                                    if (userDAO.UpdatePoints(id, cu->GetPoints())) cout << "\nPoints and Level updated successfully!\n";
+                                    else cout << "\nFailed to update points in Database!\n";
+                                }
+                            } else cout << "\nUser ID not found or is not a Customer!\n";
                             cout << "Points updated successfully!\n";
                             cin.ignore(); cin.get();
                         }
