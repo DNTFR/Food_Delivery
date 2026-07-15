@@ -712,7 +712,7 @@ int main() {
                                                         CustomerUser* customer = dynamic_cast<CustomerUser*>(userManager.GetUserByID(order.userId));
                                                         if (customer) {
                                                             string oldddLevel = customer->GetLevelName();
-                                                            customer->DecreasePoints(order.totalPrice);
+                                                            customer->DecreasePoints(order.totalPrice / 20);
                                                             userDAO.UpdatePoints(customer->GetID(), customer->GetPoints());
                                                             
                                                             string updateSql = "UPDATE orders SET status = 'Cancelled' WHERE id = " + to_string(ordID) + ";";
@@ -860,8 +860,7 @@ int main() {
                                 CustomerUser* cu = dynamic_cast<CustomerUser*>(activeMemUser);
                                 string oldLevel = cu->GetLevelName();
                                 int cupo = cu->GetPoints();
-                                if (P > cu->GetPoints()) cu->AddPoints(P - cupo);
-                                else cu->DecreasePoints(cupo - P);
+                                cu->SetPoints(P);
                                 string newLevel = cu->GetLevelName();
 
                                 if (userDAO.UpdatePoints(id, P)) {

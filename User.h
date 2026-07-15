@@ -80,6 +80,7 @@ class CustomerUser : public User {
         void DecreasePoints(double amount);
 
         int GetPoints();
+        void SetPoints(int p) { this->points = p; }
         string GetLevelName();
         double GetDiscount(double price);
         double GetShipping(double baseShipping, double price);
