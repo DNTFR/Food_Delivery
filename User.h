@@ -81,6 +81,7 @@ class CustomerUser : public User {
 
         int GetPoints();
         string GetLevelName();
+        void SetPoints(int p);
         double GetDiscount(double price);
         double GetShipping(double baseShipping, double price);
         void InitialLevel();
