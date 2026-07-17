@@ -145,6 +145,12 @@ void CustomerUser::DecreasePoints(double amount) {
     Level->UpdateState(*this);
 }
 
+void CustomerUser::SetPoints(int p) { 
+    this->points = p; 
+    Level->UpdateState(*this);
+}
+
+
 UserManager::UserManager(const vector <User*>& initialUsers) 
     : allUsers(initialUsers), currentUser(nullptr) {}
 
